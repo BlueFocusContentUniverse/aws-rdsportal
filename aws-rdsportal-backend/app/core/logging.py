@@ -18,6 +18,7 @@ import structlog
 from structlog.types import EventDict, Processor
 
 from app.core.config import get_settings
+import logging
 
 # 请求 ID 上下文变量
 request_id_var: ContextVar[Optional[str]] = ContextVar("request_id", default=None)

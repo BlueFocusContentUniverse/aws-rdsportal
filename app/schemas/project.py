@@ -2,9 +2,11 @@
 Project Pydantic 模型
 """
 
-from typing import Optional, List
-from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional, List
+
+from pydantic import BaseModel, Field, field_serializer
+
 
 class ProjectIdResponse(BaseModel):
     """
@@ -51,6 +53,10 @@ class ProjectResponse(BaseModel):
     share_poster_url: Optional[str] = Field(None, description="分享海报 URL")
     created_at: datetime = Field(..., description="创建时间")
     updated_at: datetime = Field(..., description="更新时间")
+
+    @field_serializer("project_id")
+    def serialize_project_id(self, v: int) -> str:
+        return str(v)
 
     model_config = {
         "from_attributes": True,

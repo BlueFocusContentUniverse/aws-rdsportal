@@ -10,10 +10,12 @@
 """
 
 from typing import Dict
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import Pool
+
 from app.core.config import get_settings
 from app.core.logging import get_logger
 

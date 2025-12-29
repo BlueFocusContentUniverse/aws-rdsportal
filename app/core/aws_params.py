@@ -2,9 +2,9 @@
 AWS Parameter Store 参数加载器
 """
 
-import boto3
 from typing import Dict
 
+import boto3
 import structlog
 
 logger = structlog.get_logger(__name__)

@@ -8,20 +8,19 @@ AWS Cognito Client
 - 客户端复用，无需每次创建上下文
 """
 
-import hmac
-import hashlib
-import base64
 import asyncio
-import boto3
+import base64
+import hashlib
+import hmac
 from functools import lru_cache
 from typing import Dict, Optional
 
+import boto3
 import structlog
-from botocore.exceptions import ClientError, EndpointConnectionError, ConnectTimeoutError
-from botocore.config import Config
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-
 from app.core.monitoring import track_aws_latency
+from botocore.config import Config
+from botocore.exceptions import ClientError, EndpointConnectionError, ConnectTimeoutError
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 logger = structlog.get_logger(__name__)
 

@@ -6,8 +6,9 @@
 - AWS Secrets Manager 注入的数据库环境变量
 """
 
-import urllib.parse
+from pathlib import Path
 from typing import Optional, List
+import urllib.parse
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -108,21 +109,40 @@ def get_settings() -> Settings:
         # todo 后续修改为正确的数据库配置
         # ===== 最终校验 =====
         if not _settings.DATABASE_URL:
-            # ===== 本地测试配置 ======
-            print("[CONFIG WARNING] 使用本地测试配置")
-            db_username = "postgres"
-            db_password = "Kox#Agent2025!Db"
-            db_name = "postgres"
-            db_port = "5432"
-            db_host = "database-1.c3o2mgg6e22t.us-west-2.rds.amazonaws.com"
+            BASE_DIR = Path(__file__).resolve().parent.parent.parent
+            # ===== 本地 .env fallback（字段拼接）=====
+            env_file = BASE_DIR / f".env.{_settings.ENVIRONMENT}"
+
+            if not env_file.exists():
+                raise RuntimeError(
+                    f"[CONFIG ERROR] DATABASE_URL 未配置，且本地配置文件不存在：{env_file}"
+                )
+
+            print(f"[CONFIG WARNING] 使用本地配置文件 {env_file}")
+
+            from dotenv import load_dotenv
+
+            load_dotenv(env_file, override=True)
+
+            # 重新读取配置（拿到 DB_* 字段）
+            _settings = Settings()
+
+            if not (_settings.DB_HOST and _settings.DB_USERNAME and _settings.DB_PASSWORD):
+                raise RuntimeError(
+                    "[CONFIG ERROR] 本地 .env 缺少 DB_HOST / DB_USERNAME / DB_PASSWORD"
+                )
+
+            encoded_password = urllib.parse.quote(_settings.DB_PASSWORD, safe="")
+
             _settings.DATABASE_URL = (
-                f"postgresql://{db_username}:{db_password}"
-                f"@{db_host}:{db_port}/{db_name}"
+                f"postgresql://{_settings.DB_USERNAME}:{encoded_password}"
+                f"@{_settings.DB_HOST}:{_settings.DB_PORT}/{_settings.DB_NAME}"
                 f"?sslmode=require"
             )
+
             # raise RuntimeError(
-            #     "[CONFIG ERROR] DATABASE_URL 未配置。"
-            #     "请通过 Parameter Store 或 Secrets Manager 提供数据库连接信息"
-            # )
+                    #     "[CONFIG ERROR] DATABASE_URL 未配置。"
+                    #     "请通过 Parameter Store 或 Secrets Manager 提供数据库连接信息"
+                    # )
 
     return _settings

@@ -2,8 +2,9 @@
 Project ORM 模型
 """
 
-from sqlalchemy import Column, BigInteger, String, DateTime, Index, Text
+from sqlalchemy import Column, BigInteger, String, DateTime, Text
 from sqlalchemy.sql import func
+
 from app.core.database import Base
 
 

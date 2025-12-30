@@ -62,7 +62,6 @@ class Settings(BaseSettings):
 # 全局配置实例（懒加载）
 _settings: Optional[Settings] = None
 
-
 def get_settings() -> Settings:
     """获取配置实例（懒加载）"""
     global _settings
@@ -70,78 +69,78 @@ def get_settings() -> Settings:
     if _settings is None:
         _settings = Settings()
 
-        # ===== 环境约束 =====
-        if _settings.ENVIRONMENT in ("production", "staging"):
-            if not _settings.USE_AWS_PARAMETER_STORE:
-                raise RuntimeError(
-                    f"[CONFIG ERROR] ENVIRONMENT={_settings.ENVIRONMENT} "
-                    f"必须启用 USE_AWS_PARAMETER_STORE=true，禁止使用 .env"
-                )
-
-        # ===== Parameter Store =====
-        if _settings.USE_AWS_PARAMETER_STORE:
-            from app.core.aws_params import load_parameters_from_aws_sync
-
-            params = load_parameters_from_aws_sync(
-                path="/database-monitor/database",
-                region=_settings.AWS_REGION,
+    # ===== 环境约束 =====
+    if _settings.ENVIRONMENT in ("production", "staging"):
+        if not _settings.USE_AWS_PARAMETER_STORE:
+            raise RuntimeError(
+                f"[CONFIG ERROR] ENVIRONMENT={_settings.ENVIRONMENT} "
+                f"必须启用 USE_AWS_PARAMETER_STORE=true，禁止使用 .env"
             )
 
-            if not params:
-                raise RuntimeError(
-                    "[CONFIG ERROR] 未能从 AWS Parameter Store 加载数据库配置"
-                )
+    # ===== Parameter Store =====
+    if _settings.USE_AWS_PARAMETER_STORE:
+        from app.core.aws_params import load_parameters_from_aws_sync
 
-            if "database_url" in params:
-                _settings.DATABASE_URL = params["database_url"]
+        params = load_parameters_from_aws_sync(
+            path="/database-monitor/database",
+            region=_settings.AWS_REGION,
+        )
 
-        # ===== Secrets Manager 构建 DATABASE_URL（优先级最高）=====
-        if _settings.DB_HOST and _settings.DB_PASSWORD:
-            encoded_password = urllib.parse.quote(
-                _settings.DB_PASSWORD, safe=""
-            )
-            _settings.DATABASE_URL = (
-                f"postgresql://{_settings.DB_USERNAME}:{encoded_password}"
-                f"@{_settings.DB_HOST}:{_settings.DB_PORT}/{_settings.DB_NAME}"
-                f"?sslmode=require"
+        if not params:
+            raise RuntimeError(
+                "[CONFIG ERROR] 未能从 AWS Parameter Store 加载数据库配置"
             )
 
-        # ===== 最终校验 =====
-        if not _settings.DATABASE_URL:
-            BASE_DIR = Path(__file__).resolve().parent.parent.parent
-            # ===== 本地 .env fallback（字段拼接）=====
-            env_file = BASE_DIR / f".env.{_settings.ENVIRONMENT}"
+        if "database_url" in params:
+            _settings.DATABASE_URL = params["database_url"]
 
-            if not env_file.exists():
-                raise RuntimeError(
-                    f"[CONFIG ERROR] DATABASE_URL 未配置，且本地配置文件不存在：{env_file}"
-                )
+    # ===== Secrets Manager 构建 DATABASE_URL（优先级最高）=====
+    if _settings.DB_HOST and _settings.DB_PASSWORD:
+        encoded_password = urllib.parse.quote(
+            _settings.DB_PASSWORD, safe=""
+        )
+        _settings.DATABASE_URL = (
+            f"postgresql://{_settings.DB_USERNAME}:{encoded_password}"
+            f"@{_settings.DB_HOST}:{_settings.DB_PORT}/{_settings.DB_NAME}"
+            f"?sslmode=require"
+        )
 
-            print(f"[CONFIG WARNING] 使用本地配置文件 {env_file}")
+    # ===== 最终校验 =====
+    if not _settings.DATABASE_URL:
+        BASE_DIR = Path(__file__).resolve().parent.parent.parent
+        # ===== 本地 .env fallback（字段拼接）=====
+        env_file = BASE_DIR / f".env.{_settings.ENVIRONMENT}"
 
-            from dotenv import load_dotenv
-
-            load_dotenv(env_file, override=True)
-
-            # 重新读取配置（拿到 DB_* 字段）
-            _settings = Settings()
-
-            if not (_settings.DB_HOST and _settings.DB_USERNAME and _settings.DB_PASSWORD):
-                raise RuntimeError(
-                    "[CONFIG ERROR] 本地 .env 缺少 DB_HOST / DB_USERNAME / DB_PASSWORD"
-                )
-
-            encoded_password = urllib.parse.quote(_settings.DB_PASSWORD, safe="")
-
-            _settings.DATABASE_URL = (
-                f"postgresql://{_settings.DB_USERNAME}:{encoded_password}"
-                f"@{_settings.DB_HOST}:{_settings.DB_PORT}/{_settings.DB_NAME}"
-                f"?sslmode=require"
+        if not env_file.exists():
+            raise RuntimeError(
+                f"[CONFIG ERROR] DATABASE_URL 未配置，且本地配置文件不存在：{env_file}"
             )
 
-            # raise RuntimeError(
-                    #     "[CONFIG ERROR] DATABASE_URL 未配置。"
-                    #     "请通过 Parameter Store 或 Secrets Manager 提供数据库连接信息"
-                    # )
-        print("URL : " + _settings.DATABASE_URL)
-        return _settings
+        print(f"[CONFIG WARNING] 使用本地配置文件 {env_file}")
+
+        from dotenv import load_dotenv
+
+        load_dotenv(env_file, override=True)
+
+        # 重新读取配置（拿到 DB_* 字段）
+        _settings = Settings()
+
+        if not (_settings.DB_HOST and _settings.DB_USERNAME and _settings.DB_PASSWORD):
+            raise RuntimeError(
+                "[CONFIG ERROR] 本地 .env 缺少 DB_HOST / DB_USERNAME / DB_PASSWORD"
+            )
+
+        encoded_password = urllib.parse.quote(_settings.DB_PASSWORD, safe="")
+
+        _settings.DATABASE_URL = (
+            f"postgresql://{_settings.DB_USERNAME}:{encoded_password}"
+            f"@{_settings.DB_HOST}:{_settings.DB_PORT}/{_settings.DB_NAME}"
+            f"?sslmode=require"
+        )
+
+        # raise RuntimeError(
+                #     "[CONFIG ERROR] DATABASE_URL 未配置。"
+                #     "请通过 Parameter Store 或 Secrets Manager 提供数据库连接信息"
+                # )
+    print("URL : " + _settings.DATABASE_URL)
+    return _settings

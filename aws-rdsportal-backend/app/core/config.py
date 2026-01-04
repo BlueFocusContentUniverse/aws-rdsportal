@@ -90,23 +90,27 @@ def get_settings() -> Settings:
 
         from app.core.aws_params import load_parameters_from_aws_sync
 
-        params = load_parameters_from_aws_sync(
-            path="/database-monitor/database",
-            region=_settings.AWS_REGION,
-        )
-
-        if not params:
-            raise RuntimeError(
-                "[CONFIG ERROR] 未能从 AWS Parameter Store 加载数据库配置"
+        try:
+            params = load_parameters_from_aws_sync(
+                path="/database-monitor/database-url",
+                region=_settings.AWS_REGION,
             )
+            if not params:
+                print("[PARAMETER STORE] 返回为空，没有读取到任何参数")
+            else:
+                print("[CONFIG] Parameter Store 返回 keys:", list(params.keys()))
+                if "database_url" in params and params["database_url"]:
+                    _settings.DATABASE_URL = params["database_url"]
+                    print("[CONFIG] DATABASE_URL 已从 Parameter Store 设置")
+                else:
+                    print("[PARAMETER STORE] Parameter Store 中未找到有效的 database_url")
 
-        print("[CONFIG] Parameter Store 返回 keys:", list(params.keys()))
+        except Exception as e:
+            # ✅ 直接打印 AWS 调用失败信息，不抛 RuntimeError
+            print("[PARAMETER STORE] 读取失败:", repr(e))
+            import traceback
+            traceback.print_exc()
 
-        if "database_url" in params and params["database_url"]:
-            _settings.DATABASE_URL = params["database_url"]
-            print("[CONFIG] DATABASE_URL 已从 Parameter Store 设置")
-        else:
-            print("[CONFIG] Parameter Store 中未找到有效的 database_url")
 
     # ===== Secrets Manager 构建 DATABASE_URL（优先级最高）=====
     if _settings.DB_HOST and _settings.DB_PASSWORD:

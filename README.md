@@ -80,6 +80,10 @@ pnpm run build
 如果希望 FastAPI 直接提供前端静态文件，可以将 `dist` 目录挂载到 FastAPI 的静态文件路由中，例如：
 
 ------
+## 构建Docker镜像
+```shell
+docker build -t rds_viewer .
+```
 
 ## 后端配置管理
 

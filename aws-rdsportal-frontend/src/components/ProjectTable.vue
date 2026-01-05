@@ -1,33 +1,74 @@
 <template>
   <div class="project-table">
-    <!-- 搜索栏（保持原样，可扩展） -->
-    <el-form :inline="true" class="search-form" @submit.prevent>
-    <!-- todo搜索功能尚不完善有部分错误 -->
-      <el-form-item label="项目ID">
-        <el-input v-model="filters.project_id" placeholder="请输入项目ID" clearable />
-      </el-form-item>
-      <el-form-item label="用户ID">
-        <el-input v-model="filters.user_id" placeholder="请输入用户ID" clearable />
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-            v-model="filters.date_range"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            value-format="YYYY-MM-DDTHH:mm:ss"
-            clearable
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="fetchProjects">
-          <i class="el-icon-search" style="margin-right: 4px;"></i>
-          搜索
-        </el-button>
-        <el-button @click="resetFilters">重置</el-button>
-      </el-form-item>
+    <!-- 搜索栏 + 操作栏 -->
+    <el-form :inline="true" class="search-form" @submit.prevent
+             style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+      <!-- 左边搜索项 + 按钮 -->
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <el-form-item label="项目ID">
+          <el-input v-model="filters.project_id" placeholder="请输入项目ID" clearable/>
+        </el-form-item>
+        <el-form-item label="用户ID">
+          <el-input v-model="filters.user_id" placeholder="请输入用户ID" clearable/>
+        </el-form-item>
+        <el-form-item label="创建时间">
+          <el-date-picker
+              v-model="filters.date_range"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              value-format="YYYY-MM-DDTHH:mm:ss"
+              clearable
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-dropdown style="margin-bottom: 0" :hide-on-click="false" trigger="click">
+            <el-button type="primary">
+              选择列
+              <el-icon class="el-icon-search">
+                <arrow-down/>
+              </el-icon>
+            </el-button>
+
+            <!-- 使用 #dropdown 插槽 -->
+            <template #dropdown>
+              <el-dropdown-menu class="column-dropdown-menu" style="min-width: 180px; padding: 0;">
+                <el-dropdown-item>
+                  <div style="padding: 8px;">
+                    <!-- 全选/全不选按钮 -->
+                    <el-button type="text" size="small" @click="selectAllColumns">全选</el-button>
+                    <el-button type="text" size="small" @click="deselectAllColumns">全不选</el-button>
+                    <el-divider></el-divider>
+
+                    <!-- 列复选框 -->
+                    <el-checkbox-group v-model="selectedColumns" style="display: flex; flex-direction: column;">
+                      <el-checkbox
+                          v-for="col in allColumns"
+                          :key="col.prop"
+                          :label="col.prop"
+                      >
+                        {{ col.label }}
+                      </el-checkbox>
+                    </el-checkbox-group>
+                  </div>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </el-form-item>
+
+        <!-- 搜索 + 重置按钮 -->
+        <el-form-item>
+          <el-button type="primary" @click="fetchProjects">
+            <i class="el-icon-search" style="margin-right: 4px;"></i>
+            搜索
+          </el-button>
+          <el-button @click="resetFilters">重置</el-button>
+        </el-form-item>
+      </div>
     </el-form>
+
 
     <!-- 表格 -->
     <el-table
@@ -37,82 +78,22 @@
         border
         max-height="600"
         :show-overflow-tooltip="true"
-        style="min-width: 1200px; overflow-x: auto;"
+        style="min-width: 1200px; overflow-x: auto; margin-top: 16px;"
     >
-      <el-table-column prop="project_id" label="项目ID" width="180" />
-      <el-table-column prop="user_id" label="用户ID" width="220" />
-      <el-table-column prop="title" label="标题" width="180">
-        <template #default="{ row }">
-          <el-tooltip :content="row.title || '无'" placement="top">
-            <span class="ellipsis">{{ row.title || '无' }}</span>
+      <el-table-column
+          v-for="col in displayedColumns"
+          :key="col.prop"
+          :prop="col.prop"
+          :label="col.label"
+          :width="col.width"
+      >
+        <template v-if="col.tooltip" #default="{ row }">
+          <el-tooltip :content="row[col.prop] || '无'" placement="top">
+            <span class="ellipsis">{{ row[col.prop] || '无' }}</span>
           </el-tooltip>
         </template>
-      </el-table-column>
-      <el-table-column prop="video_url" label="视频URL" width="220">
-        <template #default="{ row }">
-          <el-tooltip :content="row.video_url || '无'" placement="top">
-            <span class="ellipsis">{{ row.video_url || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="key_concept" label="核心创意" width="250">
-        <template #default="{ row }">
-          <el-tooltip :content="row.key_concept || '无'" placement="top">
-            <span class="ellipsis">{{ row.key_concept || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="poster_url" label="海报URL" width="220">
-        <template #default="{ row }">
-          <el-tooltip :content="row.poster_url || '无'" placement="top">
-            <span class="ellipsis">{{ row.poster_url || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="share_code" label="分享码" width="180" />
-      <el-table-column prop="user_prompt" label="用户输入" width="300">
-        <template #default="{ row }">
-          <el-tooltip :content="row.user_prompt || '无'" placement="top">
-            <span class="ellipsis">{{ row.user_prompt || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="cover_url" label="封面URL" width="220">
-        <template #default="{ row }">
-          <el-tooltip :content="row.cover_url || '无'" placement="top">
-            <span class="ellipsis">{{ row.cover_url || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="thumbnail_url" label="缩略图URL" width="220">
-        <template #default="{ row }">
-          <el-tooltip :content="row.thumbnail_url || '无'" placement="top">
-            <span class="ellipsis">{{ row.thumbnail_url || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="banner_url" label="BannerURL" width="220">
-        <template #default="{ row }">
-          <el-tooltip :content="row.banner_url || '无'" placement="top">
-            <span class="ellipsis">{{ row.banner_url || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="share_poster_url" label="分享海报URL" width="220">
-        <template #default="{ row }">
-          <el-tooltip :content="row.share_poster_url || '无'" placement="top">
-            <span class="ellipsis">{{ row.share_poster_url || '无' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-      <el-table-column prop="created_at" label="创建时间" width="180">
-        <template #default="{ row }">
-          <span>{{ row.created_at ? new Date(row.created_at).toLocaleString() : '无' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="updated_at" label="更新时间" width="180">
-        <template #default="{ row }">
-          <span>{{ row.updated_at ? new Date(row.updated_at).toLocaleString() : '无' }}</span>
+        <template v-else-if="col.format" #default="{ row }">
+          <span>{{ col.format(row[col.prop] ?? '') }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -131,14 +112,23 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { getProjectsPage } from '../api/project'
+import {ref, computed, onMounted} from 'vue'
+import {getProjectsPage} from '../api/project'
 
 interface Filters {
   user_id: string | null
   project_id: string | null
   date_range: [string, string] | null
+}
+
+interface Column {
+  label: string
+  prop: string
+  width?: string | number
+  tooltip?: boolean
+  format?: (val: any) => string
 }
 
 const page = ref(1)
@@ -152,8 +142,39 @@ const filters = ref<Filters>({
   date_range: null
 })
 
+// 定义所有列信息
+const allColumns: Column[] = [
+  {label: '项目ID', prop: 'project_id', width: 180},
+  {label: '用户ID', prop: 'user_id', width: 220},
+  {label: '标题', prop: 'title', width: 180, tooltip: true},
+  {label: '视频URL', prop: 'video_url', width: 220, tooltip: true},
+  {label: '核心创意', prop: 'key_concept', width: 250, tooltip: true},
+  {label: '海报URL', prop: 'poster_url', width: 220, tooltip: true},
+  {label: '分享码', prop: 'share_code', width: 180},
+  {label: '用户输入', prop: 'user_prompt', width: 300, tooltip: true},
+  {label: '封面URL', prop: 'cover_url', width: 220, tooltip: true},
+  {label: '缩略图URL', prop: 'thumbnail_url', width: 220, tooltip: true},
+  {label: 'BannerURL', prop: 'banner_url', width: 220, tooltip: true},
+  {label: '分享海报URL', prop: 'share_poster_url', width: 220, tooltip: true},
+  {label: '创建时间', prop: 'created_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无'},
+  {label: '更新时间', prop: 'updated_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无'}
+]
+
+// 默认全选
+const selectedColumns = ref(allColumns.map(col => col.prop))
+
+// 根据选中列动态显示
+const displayedColumns = computed(() =>
+    allColumns.filter(col => selectedColumns.value.includes(col.prop))
+)
+
+// 列选择控制
+const selectAllColumns = () => selectedColumns.value = allColumns.map(col => col.prop)
+const deselectAllColumns = () => selectedColumns.value = []
+
+// 分页 & 搜索
 const resetFilters = () => {
-  filters.value = { user_id: null, project_id: null, date_range: null }
+  filters.value = {user_id: null, project_id: null, date_range: null}
   page.value = 1
   fetchProjects()
 }
@@ -202,5 +223,9 @@ onMounted(() => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.column-dropdown-menu {
+  min-width: 180px;
 }
 </style>

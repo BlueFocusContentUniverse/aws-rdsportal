@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { getProjectsPage } from '../api/project';
 const page = ref(1);
 const pageSize = ref(10);
@@ -10,6 +10,31 @@ const filters = ref({
     project_id: null,
     date_range: null
 });
+// 定义所有列信息
+const allColumns = [
+    { label: '项目ID', prop: 'project_id', width: 180 },
+    { label: '用户ID', prop: 'user_id', width: 220 },
+    { label: '标题', prop: 'title', width: 180, tooltip: true },
+    { label: '视频URL', prop: 'video_url', width: 220, tooltip: true },
+    { label: '核心创意', prop: 'key_concept', width: 250, tooltip: true },
+    { label: '海报URL', prop: 'poster_url', width: 220, tooltip: true },
+    { label: '分享码', prop: 'share_code', width: 180 },
+    { label: '用户输入', prop: 'user_prompt', width: 300, tooltip: true },
+    { label: '封面URL', prop: 'cover_url', width: 220, tooltip: true },
+    { label: '缩略图URL', prop: 'thumbnail_url', width: 220, tooltip: true },
+    { label: 'BannerURL', prop: 'banner_url', width: 220, tooltip: true },
+    { label: '分享海报URL', prop: 'share_poster_url', width: 220, tooltip: true },
+    { label: '创建时间', prop: 'created_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无' },
+    { label: '更新时间', prop: 'updated_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无' }
+];
+// 默认全选
+const selectedColumns = ref(allColumns.map(col => col.prop));
+// 根据选中列动态显示
+const displayedColumns = computed(() => allColumns.filter(col => selectedColumns.value.includes(col.prop)));
+// 列选择控制
+const selectAllColumns = () => selectedColumns.value = allColumns.map(col => col.prop);
+const deselectAllColumns = () => selectedColumns.value = [];
+// 分页 & 搜索
 const resetFilters = () => {
     filters.value = { user_id: null, project_id: null, date_range: null };
     page.value = 1;
@@ -55,17 +80,22 @@ const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
     ...{ 'onSubmit': {} },
     inline: (true),
     ...{ class: "search-form" },
+    ...{ style: {} },
 }));
 const __VLS_2 = __VLS_1({
     ...{ 'onSubmit': {} },
     inline: (true),
     ...{ class: "search-form" },
+    ...{ style: {} },
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
 let __VLS_5;
 const __VLS_6 = ({ submit: {} },
     { onSubmit: () => { } });
 /** @type {__VLS_StyleScopedClasses['search-form']} */ ;
 const { default: __VLS_7 } = __VLS_3.slots;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+    ...{ style: {} },
+});
 let __VLS_8;
 /** @ts-ignore @type {typeof __VLS_components.elFormItem | typeof __VLS_components.ElFormItem | typeof __VLS_components.elFormItem | typeof __VLS_components.ElFormItem} */
 elFormItem;
@@ -166,21 +196,206 @@ const __VLS_42 = __VLS_asFunctionalComponent1(__VLS_41, new __VLS_41({}));
 const __VLS_43 = __VLS_42({}, ...__VLS_functionalComponentArgsRest(__VLS_42));
 const { default: __VLS_46 } = __VLS_44.slots;
 let __VLS_47;
+/** @ts-ignore @type {typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown} */
+elDropdown;
+// @ts-ignore
+const __VLS_48 = __VLS_asFunctionalComponent1(__VLS_47, new __VLS_47({
+    ...{ style: {} },
+    hideOnClick: (false),
+    trigger: "click",
+}));
+const __VLS_49 = __VLS_48({
+    ...{ style: {} },
+    hideOnClick: (false),
+    trigger: "click",
+}, ...__VLS_functionalComponentArgsRest(__VLS_48));
+const { default: __VLS_52 } = __VLS_50.slots;
+let __VLS_53;
 /** @ts-ignore @type {typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components.elButton | typeof __VLS_components.ElButton} */
 elButton;
 // @ts-ignore
-const __VLS_48 = __VLS_asFunctionalComponent1(__VLS_47, new __VLS_47({
+const __VLS_54 = __VLS_asFunctionalComponent1(__VLS_53, new __VLS_53({
+    type: "primary",
+}));
+const __VLS_55 = __VLS_54({
+    type: "primary",
+}, ...__VLS_functionalComponentArgsRest(__VLS_54));
+const { default: __VLS_58 } = __VLS_56.slots;
+let __VLS_59;
+/** @ts-ignore @type {typeof __VLS_components.elIcon | typeof __VLS_components.ElIcon | typeof __VLS_components.elIcon | typeof __VLS_components.ElIcon} */
+elIcon;
+// @ts-ignore
+const __VLS_60 = __VLS_asFunctionalComponent1(__VLS_59, new __VLS_59({
+    ...{ class: "el-icon-search" },
+}));
+const __VLS_61 = __VLS_60({
+    ...{ class: "el-icon-search" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_60));
+/** @type {__VLS_StyleScopedClasses['el-icon-search']} */ ;
+const { default: __VLS_64 } = __VLS_62.slots;
+let __VLS_65;
+/** @ts-ignore @type {typeof __VLS_components.arrowDown | typeof __VLS_components.ArrowDown} */
+arrowDown;
+// @ts-ignore
+const __VLS_66 = __VLS_asFunctionalComponent1(__VLS_65, new __VLS_65({}));
+const __VLS_67 = __VLS_66({}, ...__VLS_functionalComponentArgsRest(__VLS_66));
+// @ts-ignore
+[];
+var __VLS_62;
+// @ts-ignore
+[];
+var __VLS_56;
+{
+    const { dropdown: __VLS_70 } = __VLS_50.slots;
+    let __VLS_71;
+    /** @ts-ignore @type {typeof __VLS_components.elDropdownMenu | typeof __VLS_components.ElDropdownMenu | typeof __VLS_components.elDropdownMenu | typeof __VLS_components.ElDropdownMenu} */
+    elDropdownMenu;
+    // @ts-ignore
+    const __VLS_72 = __VLS_asFunctionalComponent1(__VLS_71, new __VLS_71({
+        ...{ class: "column-dropdown-menu" },
+        ...{ style: {} },
+    }));
+    const __VLS_73 = __VLS_72({
+        ...{ class: "column-dropdown-menu" },
+        ...{ style: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_72));
+    /** @type {__VLS_StyleScopedClasses['column-dropdown-menu']} */ ;
+    const { default: __VLS_76 } = __VLS_74.slots;
+    let __VLS_77;
+    /** @ts-ignore @type {typeof __VLS_components.elDropdownItem | typeof __VLS_components.ElDropdownItem | typeof __VLS_components.elDropdownItem | typeof __VLS_components.ElDropdownItem} */
+    elDropdownItem;
+    // @ts-ignore
+    const __VLS_78 = __VLS_asFunctionalComponent1(__VLS_77, new __VLS_77({}));
+    const __VLS_79 = __VLS_78({}, ...__VLS_functionalComponentArgsRest(__VLS_78));
+    const { default: __VLS_82 } = __VLS_80.slots;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ style: {} },
+    });
+    let __VLS_83;
+    /** @ts-ignore @type {typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components.elButton | typeof __VLS_components.ElButton} */
+    elButton;
+    // @ts-ignore
+    const __VLS_84 = __VLS_asFunctionalComponent1(__VLS_83, new __VLS_83({
+        ...{ 'onClick': {} },
+        type: "text",
+        size: "small",
+    }));
+    const __VLS_85 = __VLS_84({
+        ...{ 'onClick': {} },
+        type: "text",
+        size: "small",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_84));
+    let __VLS_88;
+    const __VLS_89 = ({ click: {} },
+        { onClick: (__VLS_ctx.selectAllColumns) });
+    const { default: __VLS_90 } = __VLS_86.slots;
+    // @ts-ignore
+    [selectAllColumns,];
+    var __VLS_86;
+    var __VLS_87;
+    let __VLS_91;
+    /** @ts-ignore @type {typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components.elButton | typeof __VLS_components.ElButton} */
+    elButton;
+    // @ts-ignore
+    const __VLS_92 = __VLS_asFunctionalComponent1(__VLS_91, new __VLS_91({
+        ...{ 'onClick': {} },
+        type: "text",
+        size: "small",
+    }));
+    const __VLS_93 = __VLS_92({
+        ...{ 'onClick': {} },
+        type: "text",
+        size: "small",
+    }, ...__VLS_functionalComponentArgsRest(__VLS_92));
+    let __VLS_96;
+    const __VLS_97 = ({ click: {} },
+        { onClick: (__VLS_ctx.deselectAllColumns) });
+    const { default: __VLS_98 } = __VLS_94.slots;
+    // @ts-ignore
+    [deselectAllColumns,];
+    var __VLS_94;
+    var __VLS_95;
+    let __VLS_99;
+    /** @ts-ignore @type {typeof __VLS_components.elDivider | typeof __VLS_components.ElDivider | typeof __VLS_components.elDivider | typeof __VLS_components.ElDivider} */
+    elDivider;
+    // @ts-ignore
+    const __VLS_100 = __VLS_asFunctionalComponent1(__VLS_99, new __VLS_99({}));
+    const __VLS_101 = __VLS_100({}, ...__VLS_functionalComponentArgsRest(__VLS_100));
+    let __VLS_104;
+    /** @ts-ignore @type {typeof __VLS_components.elCheckboxGroup | typeof __VLS_components.ElCheckboxGroup | typeof __VLS_components.elCheckboxGroup | typeof __VLS_components.ElCheckboxGroup} */
+    elCheckboxGroup;
+    // @ts-ignore
+    const __VLS_105 = __VLS_asFunctionalComponent1(__VLS_104, new __VLS_104({
+        modelValue: (__VLS_ctx.selectedColumns),
+        ...{ style: {} },
+    }));
+    const __VLS_106 = __VLS_105({
+        modelValue: (__VLS_ctx.selectedColumns),
+        ...{ style: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_105));
+    const { default: __VLS_109 } = __VLS_107.slots;
+    for (const [col] of __VLS_vFor((__VLS_ctx.allColumns))) {
+        let __VLS_110;
+        /** @ts-ignore @type {typeof __VLS_components.elCheckbox | typeof __VLS_components.ElCheckbox | typeof __VLS_components.elCheckbox | typeof __VLS_components.ElCheckbox} */
+        elCheckbox;
+        // @ts-ignore
+        const __VLS_111 = __VLS_asFunctionalComponent1(__VLS_110, new __VLS_110({
+            key: (col.prop),
+            label: (col.prop),
+        }));
+        const __VLS_112 = __VLS_111({
+            key: (col.prop),
+            label: (col.prop),
+        }, ...__VLS_functionalComponentArgsRest(__VLS_111));
+        const { default: __VLS_115 } = __VLS_113.slots;
+        (col.label);
+        // @ts-ignore
+        [selectedColumns, allColumns,];
+        var __VLS_113;
+        // @ts-ignore
+        [];
+    }
+    // @ts-ignore
+    [];
+    var __VLS_107;
+    // @ts-ignore
+    [];
+    var __VLS_80;
+    // @ts-ignore
+    [];
+    var __VLS_74;
+    // @ts-ignore
+    [];
+}
+// @ts-ignore
+[];
+var __VLS_50;
+// @ts-ignore
+[];
+var __VLS_44;
+let __VLS_116;
+/** @ts-ignore @type {typeof __VLS_components.elFormItem | typeof __VLS_components.ElFormItem | typeof __VLS_components.elFormItem | typeof __VLS_components.ElFormItem} */
+elFormItem;
+// @ts-ignore
+const __VLS_117 = __VLS_asFunctionalComponent1(__VLS_116, new __VLS_116({}));
+const __VLS_118 = __VLS_117({}, ...__VLS_functionalComponentArgsRest(__VLS_117));
+const { default: __VLS_121 } = __VLS_119.slots;
+let __VLS_122;
+/** @ts-ignore @type {typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components.elButton | typeof __VLS_components.ElButton} */
+elButton;
+// @ts-ignore
+const __VLS_123 = __VLS_asFunctionalComponent1(__VLS_122, new __VLS_122({
     ...{ 'onClick': {} },
     type: "primary",
 }));
-const __VLS_49 = __VLS_48({
+const __VLS_124 = __VLS_123({
     ...{ 'onClick': {} },
     type: "primary",
-}, ...__VLS_functionalComponentArgsRest(__VLS_48));
-let __VLS_52;
-const __VLS_53 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_123));
+let __VLS_127;
+const __VLS_128 = ({ click: {} },
     { onClick: (__VLS_ctx.fetchProjects) });
-const { default: __VLS_54 } = __VLS_50.slots;
+const { default: __VLS_129 } = __VLS_125.slots;
 __VLS_asFunctionalElement1(__VLS_intrinsics.i, __VLS_intrinsics.i)({
     ...{ class: "el-icon-search" },
     ...{ style: {} },
@@ -188,38 +403,38 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.i, __VLS_intrinsics.i)({
 /** @type {__VLS_StyleScopedClasses['el-icon-search']} */ ;
 // @ts-ignore
 [fetchProjects,];
-var __VLS_50;
-var __VLS_51;
-let __VLS_55;
+var __VLS_125;
+var __VLS_126;
+let __VLS_130;
 /** @ts-ignore @type {typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components.elButton | typeof __VLS_components.ElButton} */
 elButton;
 // @ts-ignore
-const __VLS_56 = __VLS_asFunctionalComponent1(__VLS_55, new __VLS_55({
+const __VLS_131 = __VLS_asFunctionalComponent1(__VLS_130, new __VLS_130({
     ...{ 'onClick': {} },
 }));
-const __VLS_57 = __VLS_56({
+const __VLS_132 = __VLS_131({
     ...{ 'onClick': {} },
-}, ...__VLS_functionalComponentArgsRest(__VLS_56));
-let __VLS_60;
-const __VLS_61 = ({ click: {} },
+}, ...__VLS_functionalComponentArgsRest(__VLS_131));
+let __VLS_135;
+const __VLS_136 = ({ click: {} },
     { onClick: (__VLS_ctx.resetFilters) });
-const { default: __VLS_62 } = __VLS_58.slots;
+const { default: __VLS_137 } = __VLS_133.slots;
 // @ts-ignore
 [resetFilters,];
-var __VLS_58;
-var __VLS_59;
+var __VLS_133;
+var __VLS_134;
 // @ts-ignore
 [];
-var __VLS_44;
+var __VLS_119;
 // @ts-ignore
 [];
 var __VLS_3;
 var __VLS_4;
-let __VLS_63;
+let __VLS_138;
 /** @ts-ignore @type {typeof __VLS_components.elTable | typeof __VLS_components.ElTable | typeof __VLS_components.elTable | typeof __VLS_components.ElTable} */
 elTable;
 // @ts-ignore
-const __VLS_64 = __VLS_asFunctionalComponent1(__VLS_63, new __VLS_63({
+const __VLS_139 = __VLS_asFunctionalComponent1(__VLS_138, new __VLS_138({
     data: (__VLS_ctx.projects),
     stripe: (true),
     border: true,
@@ -227,524 +442,88 @@ const __VLS_64 = __VLS_asFunctionalComponent1(__VLS_63, new __VLS_63({
     showOverflowTooltip: (true),
     ...{ style: {} },
 }));
-const __VLS_65 = __VLS_64({
+const __VLS_140 = __VLS_139({
     data: (__VLS_ctx.projects),
     stripe: (true),
     border: true,
     maxHeight: "600",
     showOverflowTooltip: (true),
     ...{ style: {} },
-}, ...__VLS_functionalComponentArgsRest(__VLS_64));
+}, ...__VLS_functionalComponentArgsRest(__VLS_139));
 __VLS_asFunctionalDirective(__VLS_directives.vLoading, {})(null, { ...__VLS_directiveBindingRestFields, value: (__VLS_ctx.loading) }, null, null);
-const { default: __VLS_68 } = __VLS_66.slots;
-let __VLS_69;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_70 = __VLS_asFunctionalComponent1(__VLS_69, new __VLS_69({
-    prop: "project_id",
-    label: "项目ID",
-    width: "180",
-}));
-const __VLS_71 = __VLS_70({
-    prop: "project_id",
-    label: "项目ID",
-    width: "180",
-}, ...__VLS_functionalComponentArgsRest(__VLS_70));
-let __VLS_74;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_75 = __VLS_asFunctionalComponent1(__VLS_74, new __VLS_74({
-    prop: "user_id",
-    label: "用户ID",
-    width: "220",
-}));
-const __VLS_76 = __VLS_75({
-    prop: "user_id",
-    label: "用户ID",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_75));
-let __VLS_79;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_80 = __VLS_asFunctionalComponent1(__VLS_79, new __VLS_79({
-    prop: "title",
-    label: "标题",
-    width: "180",
-}));
-const __VLS_81 = __VLS_80({
-    prop: "title",
-    label: "标题",
-    width: "180",
-}, ...__VLS_functionalComponentArgsRest(__VLS_80));
-const { default: __VLS_84 } = __VLS_82.slots;
-{
-    const { default: __VLS_85 } = __VLS_82.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_85);
-    let __VLS_86;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
+const { default: __VLS_143 } = __VLS_141.slots;
+for (const [col] of __VLS_vFor((__VLS_ctx.displayedColumns))) {
+    let __VLS_144;
+    /** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
+    elTableColumn;
     // @ts-ignore
-    const __VLS_87 = __VLS_asFunctionalComponent1(__VLS_86, new __VLS_86({
-        content: (row.title || '无'),
-        placement: "top",
+    const __VLS_145 = __VLS_asFunctionalComponent1(__VLS_144, new __VLS_144({
+        key: (col.prop),
+        prop: (col.prop),
+        label: (col.label),
+        width: (col.width),
     }));
-    const __VLS_88 = __VLS_87({
-        content: (row.title || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_87));
-    const { default: __VLS_91 } = __VLS_89.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.title || '无');
+    const __VLS_146 = __VLS_145({
+        key: (col.prop),
+        prop: (col.prop),
+        label: (col.label),
+        width: (col.width),
+    }, ...__VLS_functionalComponentArgsRest(__VLS_145));
+    const { default: __VLS_149 } = __VLS_147.slots;
+    if (col.tooltip) {
+        {
+            const { default: __VLS_150 } = __VLS_147.slots;
+            const [{ row }] = __VLS_vSlot(__VLS_150);
+            let __VLS_151;
+            /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
+            elTooltip;
+            // @ts-ignore
+            const __VLS_152 = __VLS_asFunctionalComponent1(__VLS_151, new __VLS_151({
+                content: (row[col.prop] || '无'),
+                placement: "top",
+            }));
+            const __VLS_153 = __VLS_152({
+                content: (row[col.prop] || '无'),
+                placement: "top",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_152));
+            const { default: __VLS_156 } = __VLS_154.slots;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ellipsis" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
+            (row[col.prop] || '无');
+            // @ts-ignore
+            [projects, vLoading, loading, displayedColumns,];
+            var __VLS_154;
+            // @ts-ignore
+            [];
+        }
+    }
+    else if (col.format) {
+        {
+            const { default: __VLS_157 } = __VLS_147.slots;
+            const [{ row }] = __VLS_vSlot(__VLS_157);
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
+            (col.format(row[col.prop] ?? ''));
+            // @ts-ignore
+            [];
+        }
+    }
     // @ts-ignore
-    [projects, vLoading, loading,];
-    var __VLS_89;
+    [];
+    var __VLS_147;
     // @ts-ignore
     [];
 }
 // @ts-ignore
 [];
-var __VLS_82;
-let __VLS_92;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_93 = __VLS_asFunctionalComponent1(__VLS_92, new __VLS_92({
-    prop: "video_url",
-    label: "视频URL",
-    width: "220",
-}));
-const __VLS_94 = __VLS_93({
-    prop: "video_url",
-    label: "视频URL",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_93));
-const { default: __VLS_97 } = __VLS_95.slots;
-{
-    const { default: __VLS_98 } = __VLS_95.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_98);
-    let __VLS_99;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_100 = __VLS_asFunctionalComponent1(__VLS_99, new __VLS_99({
-        content: (row.video_url || '无'),
-        placement: "top",
-    }));
-    const __VLS_101 = __VLS_100({
-        content: (row.video_url || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_100));
-    const { default: __VLS_104 } = __VLS_102.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.video_url || '无');
-    // @ts-ignore
-    [];
-    var __VLS_102;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_95;
-let __VLS_105;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_106 = __VLS_asFunctionalComponent1(__VLS_105, new __VLS_105({
-    prop: "key_concept",
-    label: "核心创意",
-    width: "250",
-}));
-const __VLS_107 = __VLS_106({
-    prop: "key_concept",
-    label: "核心创意",
-    width: "250",
-}, ...__VLS_functionalComponentArgsRest(__VLS_106));
-const { default: __VLS_110 } = __VLS_108.slots;
-{
-    const { default: __VLS_111 } = __VLS_108.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_111);
-    let __VLS_112;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_113 = __VLS_asFunctionalComponent1(__VLS_112, new __VLS_112({
-        content: (row.key_concept || '无'),
-        placement: "top",
-    }));
-    const __VLS_114 = __VLS_113({
-        content: (row.key_concept || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_113));
-    const { default: __VLS_117 } = __VLS_115.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.key_concept || '无');
-    // @ts-ignore
-    [];
-    var __VLS_115;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_108;
-let __VLS_118;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_119 = __VLS_asFunctionalComponent1(__VLS_118, new __VLS_118({
-    prop: "poster_url",
-    label: "海报URL",
-    width: "220",
-}));
-const __VLS_120 = __VLS_119({
-    prop: "poster_url",
-    label: "海报URL",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_119));
-const { default: __VLS_123 } = __VLS_121.slots;
-{
-    const { default: __VLS_124 } = __VLS_121.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_124);
-    let __VLS_125;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_126 = __VLS_asFunctionalComponent1(__VLS_125, new __VLS_125({
-        content: (row.poster_url || '无'),
-        placement: "top",
-    }));
-    const __VLS_127 = __VLS_126({
-        content: (row.poster_url || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_126));
-    const { default: __VLS_130 } = __VLS_128.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.poster_url || '无');
-    // @ts-ignore
-    [];
-    var __VLS_128;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_121;
-let __VLS_131;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_132 = __VLS_asFunctionalComponent1(__VLS_131, new __VLS_131({
-    prop: "share_code",
-    label: "分享码",
-    width: "180",
-}));
-const __VLS_133 = __VLS_132({
-    prop: "share_code",
-    label: "分享码",
-    width: "180",
-}, ...__VLS_functionalComponentArgsRest(__VLS_132));
-let __VLS_136;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_137 = __VLS_asFunctionalComponent1(__VLS_136, new __VLS_136({
-    prop: "user_prompt",
-    label: "用户输入",
-    width: "300",
-}));
-const __VLS_138 = __VLS_137({
-    prop: "user_prompt",
-    label: "用户输入",
-    width: "300",
-}, ...__VLS_functionalComponentArgsRest(__VLS_137));
-const { default: __VLS_141 } = __VLS_139.slots;
-{
-    const { default: __VLS_142 } = __VLS_139.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_142);
-    let __VLS_143;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_144 = __VLS_asFunctionalComponent1(__VLS_143, new __VLS_143({
-        content: (row.user_prompt || '无'),
-        placement: "top",
-    }));
-    const __VLS_145 = __VLS_144({
-        content: (row.user_prompt || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_144));
-    const { default: __VLS_148 } = __VLS_146.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.user_prompt || '无');
-    // @ts-ignore
-    [];
-    var __VLS_146;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_139;
-let __VLS_149;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_150 = __VLS_asFunctionalComponent1(__VLS_149, new __VLS_149({
-    prop: "cover_url",
-    label: "封面URL",
-    width: "220",
-}));
-const __VLS_151 = __VLS_150({
-    prop: "cover_url",
-    label: "封面URL",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_150));
-const { default: __VLS_154 } = __VLS_152.slots;
-{
-    const { default: __VLS_155 } = __VLS_152.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_155);
-    let __VLS_156;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_157 = __VLS_asFunctionalComponent1(__VLS_156, new __VLS_156({
-        content: (row.cover_url || '无'),
-        placement: "top",
-    }));
-    const __VLS_158 = __VLS_157({
-        content: (row.cover_url || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_157));
-    const { default: __VLS_161 } = __VLS_159.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.cover_url || '无');
-    // @ts-ignore
-    [];
-    var __VLS_159;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_152;
-let __VLS_162;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_163 = __VLS_asFunctionalComponent1(__VLS_162, new __VLS_162({
-    prop: "thumbnail_url",
-    label: "缩略图URL",
-    width: "220",
-}));
-const __VLS_164 = __VLS_163({
-    prop: "thumbnail_url",
-    label: "缩略图URL",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_163));
-const { default: __VLS_167 } = __VLS_165.slots;
-{
-    const { default: __VLS_168 } = __VLS_165.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_168);
-    let __VLS_169;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_170 = __VLS_asFunctionalComponent1(__VLS_169, new __VLS_169({
-        content: (row.thumbnail_url || '无'),
-        placement: "top",
-    }));
-    const __VLS_171 = __VLS_170({
-        content: (row.thumbnail_url || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_170));
-    const { default: __VLS_174 } = __VLS_172.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.thumbnail_url || '无');
-    // @ts-ignore
-    [];
-    var __VLS_172;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_165;
-let __VLS_175;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_176 = __VLS_asFunctionalComponent1(__VLS_175, new __VLS_175({
-    prop: "banner_url",
-    label: "BannerURL",
-    width: "220",
-}));
-const __VLS_177 = __VLS_176({
-    prop: "banner_url",
-    label: "BannerURL",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_176));
-const { default: __VLS_180 } = __VLS_178.slots;
-{
-    const { default: __VLS_181 } = __VLS_178.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_181);
-    let __VLS_182;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_183 = __VLS_asFunctionalComponent1(__VLS_182, new __VLS_182({
-        content: (row.banner_url || '无'),
-        placement: "top",
-    }));
-    const __VLS_184 = __VLS_183({
-        content: (row.banner_url || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_183));
-    const { default: __VLS_187 } = __VLS_185.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.banner_url || '无');
-    // @ts-ignore
-    [];
-    var __VLS_185;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_178;
-let __VLS_188;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_189 = __VLS_asFunctionalComponent1(__VLS_188, new __VLS_188({
-    prop: "share_poster_url",
-    label: "分享海报URL",
-    width: "220",
-}));
-const __VLS_190 = __VLS_189({
-    prop: "share_poster_url",
-    label: "分享海报URL",
-    width: "220",
-}, ...__VLS_functionalComponentArgsRest(__VLS_189));
-const { default: __VLS_193 } = __VLS_191.slots;
-{
-    const { default: __VLS_194 } = __VLS_191.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_194);
-    let __VLS_195;
-    /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
-    elTooltip;
-    // @ts-ignore
-    const __VLS_196 = __VLS_asFunctionalComponent1(__VLS_195, new __VLS_195({
-        content: (row.share_poster_url || '无'),
-        placement: "top",
-    }));
-    const __VLS_197 = __VLS_196({
-        content: (row.share_poster_url || '无'),
-        placement: "top",
-    }, ...__VLS_functionalComponentArgsRest(__VLS_196));
-    const { default: __VLS_200 } = __VLS_198.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "ellipsis" },
-    });
-    /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
-    (row.share_poster_url || '无');
-    // @ts-ignore
-    [];
-    var __VLS_198;
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_191;
-let __VLS_201;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_202 = __VLS_asFunctionalComponent1(__VLS_201, new __VLS_201({
-    prop: "created_at",
-    label: "创建时间",
-    width: "180",
-}));
-const __VLS_203 = __VLS_202({
-    prop: "created_at",
-    label: "创建时间",
-    width: "180",
-}, ...__VLS_functionalComponentArgsRest(__VLS_202));
-const { default: __VLS_206 } = __VLS_204.slots;
-{
-    const { default: __VLS_207 } = __VLS_204.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_207);
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
-    (row.created_at ? new Date(row.created_at).toLocaleString() : '无');
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_204;
-let __VLS_208;
-/** @ts-ignore @type {typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn | typeof __VLS_components.elTableColumn | typeof __VLS_components.ElTableColumn} */
-elTableColumn;
-// @ts-ignore
-const __VLS_209 = __VLS_asFunctionalComponent1(__VLS_208, new __VLS_208({
-    prop: "updated_at",
-    label: "更新时间",
-    width: "180",
-}));
-const __VLS_210 = __VLS_209({
-    prop: "updated_at",
-    label: "更新时间",
-    width: "180",
-}, ...__VLS_functionalComponentArgsRest(__VLS_209));
-const { default: __VLS_213 } = __VLS_211.slots;
-{
-    const { default: __VLS_214 } = __VLS_211.slots;
-    const [{ row }] = __VLS_vSlot(__VLS_214);
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
-    (row.updated_at ? new Date(row.updated_at).toLocaleString() : '无');
-    // @ts-ignore
-    [];
-}
-// @ts-ignore
-[];
-var __VLS_211;
-// @ts-ignore
-[];
-var __VLS_66;
+var __VLS_141;
 if (__VLS_ctx.total > __VLS_ctx.pageSize) {
-    let __VLS_215;
+    let __VLS_158;
     /** @ts-ignore @type {typeof __VLS_components.elPagination | typeof __VLS_components.ElPagination} */
     elPagination;
     // @ts-ignore
-    const __VLS_216 = __VLS_asFunctionalComponent1(__VLS_215, new __VLS_215({
+    const __VLS_159 = __VLS_asFunctionalComponent1(__VLS_158, new __VLS_158({
         ...{ 'onCurrentChange': {} },
         background: true,
         layout: "prev, pager, next",
@@ -753,7 +532,7 @@ if (__VLS_ctx.total > __VLS_ctx.pageSize) {
         total: (__VLS_ctx.total),
         ...{ class: "pagination" },
     }));
-    const __VLS_217 = __VLS_216({
+    const __VLS_160 = __VLS_159({
         ...{ 'onCurrentChange': {} },
         background: true,
         layout: "prev, pager, next",
@@ -761,13 +540,13 @@ if (__VLS_ctx.total > __VLS_ctx.pageSize) {
         pageSize: (__VLS_ctx.pageSize),
         total: (__VLS_ctx.total),
         ...{ class: "pagination" },
-    }, ...__VLS_functionalComponentArgsRest(__VLS_216));
-    let __VLS_220;
-    const __VLS_221 = ({ currentChange: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_159));
+    let __VLS_163;
+    const __VLS_164 = ({ currentChange: {} },
         { onCurrentChange: (__VLS_ctx.handlePageChange) });
     /** @type {__VLS_StyleScopedClasses['pagination']} */ ;
-    var __VLS_218;
-    var __VLS_219;
+    var __VLS_161;
+    var __VLS_162;
 }
 // @ts-ignore
 [total, total, pageSize, pageSize, page, handlePageChange,];

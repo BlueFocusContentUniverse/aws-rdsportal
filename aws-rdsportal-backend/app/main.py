@@ -7,6 +7,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles  # <--- 添加这一行导入
+from fastapi.responses import FileResponse
+
 
 from app.api.v1.router import router as api_v1_router
 from app.core.config import get_settings
@@ -95,8 +97,21 @@ main_router.include_router(api_v1_router)
 # app.include_router(main_router)
 app.include_router(main_router,prefix="/api")
 
-app.mount("/", StaticFiles(directory="app/frontend", html=True), name="frontend")
+# 静态文件
+app.mount(
+    "/assets",
+    StaticFiles(directory="app/frontend/assets"),
+    name="assets",
+)
 
+# SPA fallback兜住
+@app.get("/{full_path:path}")
+async def spa_fallback(full_path: str):
+    # 防止误吃 API
+    if full_path.startswith("api"):
+        return {"detail": "Not Found"}
+
+    return FileResponse("app/frontend/index.html")
 # 启动事件
 @app.on_event("startup")
 async def startup_event():
@@ -122,7 +137,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="127.0.0.1",
-        port=8080,
+        port=80,
         reload=False,  # 开发环境启用热重载
         log_level=settings.LOG_LEVEL.lower(),
     )

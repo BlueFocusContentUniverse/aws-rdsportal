@@ -92,7 +92,7 @@ def get_settings() -> Settings:
 
         try:
             params = load_parameters_from_aws_sync(
-                path="/database-monitor/database-url",
+                path="/user-backend-dev/",
                 region=_settings.AWS_REGION,
             )
             if not params:

@@ -10,57 +10,71 @@ import structlog
 logger = structlog.get_logger(__name__)
 
 
+from typing import Dict
+import boto3
+import logging
+
+
+
 def load_parameters_from_aws_sync(
-    path: str = "/database-monitor/database-url", region: str = "us-west-2"
-    ) -> Dict[str, str]:
-    """
-    从 AWS Systems Manager Parameter Store 批量加载参数（同步版本）
+        path: str = "/user-backend-dev/",
+        region: str = "us-west-2",
+) -> Dict[str, str]:
+    print(f"[SSM] param path : {path}")
+    print(f"[SSM] region     : {region}")
 
-    Args:
-        path: Parameter Store 路径前缀
-        region: AWS Region
-
-    Returns:
-        参数字典，key 为参数名（不含路径前缀），value 为参数值
-
-    Example:
-        /database-monitor/database-url/cognito/user_pool_id -> {"cognito_user_pool_id": "us-west-2_xxx"}
-    """
     ssm = boto3.client("ssm", region_name=region)
+    parameters: Dict[str, str] = {}
 
     try:
-        parameters = {}
-        next_token = None
+        # 👉 先尝试当「目录」读
+        response = ssm.get_parameters_by_path(
+            Path=path,
+            Recursive=True,
+            WithDecryption=True,
+        )
 
-        # 分页获取所有参数
-        while True:
-            if next_token:
-                response = ssm.get_parameters_by_path(
-                    Path=path, Recursive=True, WithDecryption=True, NextToken=next_token
-                )
-            else:
-                response = ssm.get_parameters_by_path(
-                    Path=path, Recursive=True, WithDecryption=True
-                )
+        # 如果目录下有参数
+        if response.get("Parameters"):
+            print(f"[SSM] detected path parameters ({len(response['Parameters'])})")
 
             for param in response["Parameters"]:
-                # 提取参数名（去掉路径前缀）
-                # /database-monitor/database-url/cognito/user_pool_id -> cognito_user_pool_id
-                name = param["Name"].replace(path, "").lstrip("/").replace("/", "_")
+                name = (
+                    param["Name"]
+                    .replace(path, "")
+                    .lstrip("/")
+                    .replace("/", "_")
+                )
                 value = param["Value"]
                 parameters[name] = value
+                print(f"[SSM] {name} = {value}")
 
-            # 检查是否还有更多参数
-            next_token = response.get("NextToken")
-            if not next_token:
-                break
+            logger.info(
+                "aws_params_loaded_by_path",
+                path=path,
+                region=region,
+                param_count=len(parameters),
+            )
+            return parameters
 
-        # 只记录加载的参数数量，不记录任何具体值
+        # 👉 如果目录下是空的，说明它可能是「单个参数」
+        print("[SSM] no parameters under path, trying get_parameter")
+
+        single = ssm.get_parameter(
+            Name=path,
+            WithDecryption=True,
+        )
+
+        key = path.split("/")[-1]
+        value = single["Parameter"]["Value"]
+        parameters[key] = value
+
+        print(f"[SSM] {key} = {value}")
+
         logger.info(
-            "aws_params_loaded",
-            path=path,
+            "aws_param_loaded_single",
+            name=path,
             region=region,
-            param_count=len(parameters),
         )
         return parameters
 
@@ -71,12 +85,15 @@ def load_parameters_from_aws_sync(
             region=region,
             error=str(e),
         )
+        print("[SSM] ERROR:", e)
         return {}
 
 
 async def load_parameters_from_aws(
-    path: str = "/database-monitor/database-url", region: str = "us-west-2"
+    path: str = "/user-backend-dev/database-url", region: str = "us-west-2"
     ) -> Dict[str, str]:
+    print("param : " + path)
+    print("region : " + region)
     """
     从 AWS Systems Manager Parameter Store 批量加载参数（异步版本）
 

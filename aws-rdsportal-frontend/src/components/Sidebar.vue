@@ -1,24 +1,55 @@
 <template>
   <el-menu
-      default-active="/projects"
+      default-active="/projects/list"
       class="sidebar"
-      background-color="#2d3a4b"
-      text-color="#fff"
-      active-text-color="#ffd04b"
+      background-color="transparent"
+      text-color="#a0aec0"
+      active-text-color="#63b3ed"
       router
       :collapse="collapse"
   >
-    <!-- Logo 保留原样 -->
+    <!-- Logo容器 (保持不变) -->
     <div class="logo-container">
       <div class="logo">
-        BlueFocus
+        <span class="logo-text">BlueFocus</span>
+        <div class="logo-glow"></div>
       </div>
     </div>
 
-    <!-- 菜单项 -->
-    <el-menu-item index="/projects">
-      项目列表
-    </el-menu-item>
+    <!-- 示例：数据查询 (父菜单) -->
+    <el-sub-menu index="1" class="sub-menu-wrapper">
+      <template #title>
+        <span class="sub-menu-title">数据查询</span>
+      </template>
+      <!-- 子菜单项 -->
+      <el-menu-item index="/projects/list" class="menu-item">
+        <span class="item-text">项目列表</span>
+        <div class="item-active-mark"></div>
+      </el-menu-item>
+      <!-- 未来可以在这里添加更多子项，例如： -->
+      <!-- <el-menu-item index="/projects/statistics" class="menu-item">
+        <span class="item-text">项目统计</span>
+        <div class="item-active-mark"></div>
+      </el-menu-item> -->
+    </el-sub-menu>
+
+    <!-- 示例：系统管理 (另一个父菜单) -->
+    <el-sub-menu index="2" class="sub-menu-wrapper">
+      <template #title>
+        <span class="sub-menu-title">系统管理</span>
+      </template>
+      <el-menu-item index="/system/users" class="menu-item">
+        <span class="item-text">用户管理</span>
+        <div class="item-active-mark"></div>
+      </el-menu-item>
+    </el-sub-menu>
+
+    <!-- 未来可以在这里添加更多顶级菜单 -->
+    <!-- <el-menu-item index="/dashboard" class="menu-item">
+      <span class="item-text">数据概览</span>
+      <div class="item-active-mark"></div>
+    </el-menu-item> -->
+
   </el-menu>
 </template>
 
@@ -29,58 +60,134 @@ const collapse = ref(false) // 可折叠状态
 </script>
 
 <style scoped>
+/* 侧边栏基础样式 (保持不变) */
 .sidebar {
   height: 100vh;
-  width: 200px;
-  background-color: #2d3a4b;
+  width: 220px;
+  background: linear-gradient(180deg, #1a202c 0%, #2d3748 100%);
+  backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(75, 85, 99, 0.3);
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Logo 部分保持原样 */
+/* 折叠状态调整 (保持不变) */
+.sidebar:not(.el-menu--collapse) {
+  width: 220px;
+}
+.sidebar.el-menu--collapse {
+  width: 80px;
+}
+
+/* Logo容器 (保持不变) */
 .logo-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60px;
-  background-color: #2d3a4b;
-}
-
-.logo {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffd04b;
-  letter-spacing: 1px;
-  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  user-select: none;
-  cursor: default;
-  transition: all 0.2s ease-in-out;
-}
-
-.logo:hover {
-  color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-}
-
-/* 选中菜单项文字高亮 + 位置相对 */
-.sidebar :deep(.el-menu-item.is-active) {
+  height: 80px;
   position: relative;
-  color: #ffd04b; /* 文字高亮 */
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.2);
 }
-
-/* 左侧箭头标记 */
-.sidebar :deep(.el-menu-item.is-active)::before {
-  content: "▶";              /* 你也可以换成 "›" 或 SVG */
+.logo {
+  position: relative;
+  z-index: 2;
+}
+.logo-text {
+  font-size: 26px;
+  font-weight: 800;
+  color: #63b3ed;
+  letter-spacing: 2px;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  text-shadow: 0 0 8px rgba(99, 179, 237, 0.5);
+  user-select: none;
+}
+.logo-glow {
   position: absolute;
-  left: 0;                    /* 靠左边 */
   top: 50%;
-  transform: translateY(-50%);
-  color: #ffd04b;             /* 高亮颜色 */
-  font-size: 16px;
-  transition: all 0.2s;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(99, 179, 237, 0.2) 0%, transparent 70%);
+  z-index: 1;
 }
 
-/* 折叠状态下箭头隐藏 */
-.sidebar[style*="width: 64px"] :deep(.el-menu-item.is-active)::before {
+/* --- 新增和修改的样式 --- */
+
+/* 父菜单 (el-sub-menu) 样式 */
+.sub-menu-wrapper {
+  border-radius: 8px;
+  margin: 8px 12px;
+  overflow: hidden;
+}
+
+/* 父菜单标题样式 */
+.sub-menu-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #a0aec0;
+  transition: color 0.2s ease;
+}
+/* 父菜单标题在hover或其子项激活时的高亮效果 */
+.sidebar :deep(.el-sub-menu__title:hover .sub-menu-title),
+.sidebar :deep(.el-sub-menu.is-active .sub-menu-title) {
+  color: #63b3ed;
+}
+
+/* 子菜单容器样式 */
+.sidebar :deep(.el-sub-menu .el-menu) {
+  background-color: rgba(26, 32, 44, 0.5) !important;
+}
+
+/* 菜单项 (el-menu-item) 样式 */
+.menu-item {
+  position: relative;
+  height: 50px; /* 子项高度稍小，显得更紧凑 */
+  margin: 0 8px; /* 与父菜单边框保持距离 */
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+.menu-item:hover {
+  background-color: rgba(75, 85, 99, 0.2);
+}
+
+/* 菜单项文字 */
+.item-text {
+  font-size: 15px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+/* 选中状态标记 (科技感侧条) */
+.item-active-mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: linear-gradient(180deg, #63b3ed 0%, #3182ce 100%);
+  box-shadow: 0 0 8px rgba(99, 179, 237, 0.6);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* 选中时显示标记 + 文字高亮 */
+.sidebar :deep(.el-menu-item.is-active) .item-text {
+  color: #63b3ed;
+  text-shadow: 0 0 6px rgba(99, 179, 237, 0.4);
+}
+.sidebar :deep(.el-menu-item.is-active) .item-active-mark {
+  opacity: 1;
+}
+
+/* 折叠状态下调整 */
+.sidebar.el-menu--collapse .logo-text {
+  font-size: 18px;
+}
+.sidebar.el-menu--collapse .item-text,
+.sidebar.el-menu--collapse .sub-menu-title {
   display: none;
 }
 </style>

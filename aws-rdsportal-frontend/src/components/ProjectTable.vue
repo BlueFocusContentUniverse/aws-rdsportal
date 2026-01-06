@@ -100,13 +100,15 @@
 
     <!-- 分页 -->
     <el-pagination
-        v-if="total > pageSize"
+        v-if="total > 0"
         background
-        layout="prev, pager, next"
+        layout="prev, pager, next, ->, jumper, ->, sizes, ->, total"
         :current-page="page"
+        :page-sizes="[10, 20, 50, 100]"
         :page-size="pageSize"
         :total="total"
         @current-change="handlePageChange"
+        @size-change="handleSizeChange"
         class="pagination"
     />
   </div>
@@ -116,6 +118,7 @@
 <script setup lang="ts">
 import {ref, computed, onMounted} from 'vue'
 import {getProjectsPage} from '../api/project'
+import {ArrowDown} from '@element-plus/icons-vue'
 
 interface Filters {
   user_id: string | null
@@ -181,6 +184,13 @@ const resetFilters = () => {
 
 const handlePageChange = (newPage: number) => {
   page.value = newPage
+  fetchProjects()
+}
+
+// 处理分页大小变化
+const handleSizeChange = (newSize: number) => {
+  pageSize.value = newSize
+  page.value = 1
   fetchProjects()
 }
 

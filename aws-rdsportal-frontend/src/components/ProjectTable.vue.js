@@ -44,6 +44,12 @@ const handlePageChange = (newPage) => {
     page.value = newPage;
     fetchProjects();
 };
+// 处理分页大小变化
+const handleSizeChange = (newSize) => {
+    pageSize.value = newSize;
+    page.value = 1;
+    fetchProjects();
+};
 const fetchProjects = async () => {
     loading.value = true;
     try {
@@ -518,25 +524,29 @@ for (const [col] of __VLS_vFor((__VLS_ctx.displayedColumns))) {
 // @ts-ignore
 [];
 var __VLS_141;
-if (__VLS_ctx.total > __VLS_ctx.pageSize) {
+if (__VLS_ctx.total > 0) {
     let __VLS_158;
     /** @ts-ignore @type {typeof __VLS_components.elPagination | typeof __VLS_components.ElPagination} */
     elPagination;
     // @ts-ignore
     const __VLS_159 = __VLS_asFunctionalComponent1(__VLS_158, new __VLS_158({
         ...{ 'onCurrentChange': {} },
+        ...{ 'onSizeChange': {} },
         background: true,
-        layout: "prev, pager, next",
+        layout: "prev, pager, next, ->, jumper, ->, sizes, ->, total",
         currentPage: (__VLS_ctx.page),
+        pageSizes: ([10, 20, 50, 100]),
         pageSize: (__VLS_ctx.pageSize),
         total: (__VLS_ctx.total),
         ...{ class: "pagination" },
     }));
     const __VLS_160 = __VLS_159({
         ...{ 'onCurrentChange': {} },
+        ...{ 'onSizeChange': {} },
         background: true,
-        layout: "prev, pager, next",
+        layout: "prev, pager, next, ->, jumper, ->, sizes, ->, total",
         currentPage: (__VLS_ctx.page),
+        pageSizes: ([10, 20, 50, 100]),
         pageSize: (__VLS_ctx.pageSize),
         total: (__VLS_ctx.total),
         ...{ class: "pagination" },
@@ -544,11 +554,13 @@ if (__VLS_ctx.total > __VLS_ctx.pageSize) {
     let __VLS_163;
     const __VLS_164 = ({ currentChange: {} },
         { onCurrentChange: (__VLS_ctx.handlePageChange) });
+    const __VLS_165 = ({ sizeChange: {} },
+        { onSizeChange: (__VLS_ctx.handleSizeChange) });
     /** @type {__VLS_StyleScopedClasses['pagination']} */ ;
     var __VLS_161;
     var __VLS_162;
 }
 // @ts-ignore
-[total, total, pageSize, pageSize, page, handlePageChange,];
+[total, total, page, pageSize, handlePageChange, handleSizeChange,];
 const __VLS_export = (await import('vue')).defineComponent({});
 export default {};

@@ -80,8 +80,9 @@ const handleLogin = async () => {
     ElMessage.success('登录成功')
 
     // 登录成功跳转
-    const redirect = '/projects'
-    await router.replace(redirect)
+    // 登录后跳转之前访问的页面，默认跳 /projects
+    const redirect = route.query.redirect as string || '/projects'
+    await router.push(redirect)
   } catch (err: any) {
     ElMessage.error(
         err?.response?.data?.message || '登录失败'

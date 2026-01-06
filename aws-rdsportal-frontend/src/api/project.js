@@ -9,5 +9,5 @@ export const getProjectsPage = async (page, pageSize, filters) => {
         params.start_time = filters.date_range[0];
         params.end_time = filters.date_range[1];
     }
-    return request.get('/projects', { params });
+    return request.get('/projects/list', { params });
 };

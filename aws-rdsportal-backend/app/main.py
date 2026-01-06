@@ -8,11 +8,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles  # <--- 添加这一行导入
 from fastapi.responses import FileResponse
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
 
 
 from app.api.v1.router import router as api_v1_router
 from app.core.config import get_settings
 from app.core.logging import setup_logging, get_logger
+from app.core.token_cache import get_token_by_token
 
 # 初始化日志系统
 setup_logging()
@@ -81,6 +85,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    path = request.url.path
+
+    # 只拦截 /api 开头的接口
+    if not path.startswith("/api"):
+        return await call_next(request)
+
+    # /auth 不需要鉴权
+    if path.startswith("/api/auth"):
+        return await call_next(request)
+
+    # 其他接口都做鉴权
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse(
+            status_code=401,
+            content={"detail": "Missing Authorization header"}
+        )
+
+    token = auth_header.removeprefix("Bearer ").strip()
+
+    # 🔐 实际校验逻辑：根据 token 查缓存
+    token_data = get_token_by_token(token)  # 你需要在 token_cache.py 新增这个方法
+    print("token_data:", token_data)
+    if not token_data:
+        return JSONResponse(
+            status_code=401,
+            content={"detail": "Invalid or expired token"}
+        )
+
+    return await call_next(request)
+
 # ========== 健康检查端点 ==========
 
 from fastapi import APIRouter
@@ -137,7 +175,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="127.0.0.1",
-        port=8080,
+        port=80,
         reload=False,  # 开发环境启用热重载
         log_level=settings.LOG_LEVEL.lower(),
     )

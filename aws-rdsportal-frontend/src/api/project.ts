@@ -20,5 +20,5 @@ export const getProjectsPage = async (
         params.end_time = filters.date_range[1]
     }
 
-    return request.get('/projects', { params })
+    return request.get('/projects/list', { params })
 }

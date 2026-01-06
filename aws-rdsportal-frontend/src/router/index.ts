@@ -1,23 +1,51 @@
-import {createRouter, createWebHistory, Router, RouteRecordRaw} from 'vue-router'
-import ProjectList from "../views/ProjectList.vue";
+import { createRouter, createWebHistory, Router, RouteRecordRaw } from 'vue-router'
+import ProjectList from '../views/ProjectList.vue'
+import Login from '../views/Login.vue'
+import { getToken } from '../utils/auth'
+
 
 const routes: RouteRecordRaw[] = [
     {
+        path: '/login',
+        name: 'Login',
+        component: Login,
+    },
+    {
         path: '/',
-        name: 'Home',
         redirect: '/projects',
     },
     {
         path: '/projects',
         name: 'ProjectList',
-        component: ProjectList
-    }
+        component: ProjectList,
+        meta: {
+            requiresAuth: true,
+        },
+    },
 ]
 
-let router: Router;
-router = createRouter({
+const router: Router = createRouter({
     history: createWebHistory(),
-    routes
-});
+    routes,
+})
+
+/**
+ * 全局路由守卫：鉴权
+ */
+router.beforeEach((to) => {
+    if (!to.meta.requiresAuth) {
+        return true
+    }
+
+    const token = getToken()
+    if (!token) {
+        return {
+            path: '/login',
+            query: { redirect: to.fullPath },
+        }
+    }
+
+    return true
+})
 
 export default router

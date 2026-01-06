@@ -15,7 +15,7 @@ router = APIRouter(prefix="/projects", tags=["Project"])
 
 
 @router.get(
-    "",
+    "/list",
     response_model=ProjectListResponse,
     summary="分页获取项目列表",
     description="分页获取项目列表（内部使用），支持按用户ID、项目ID、时间段过滤",

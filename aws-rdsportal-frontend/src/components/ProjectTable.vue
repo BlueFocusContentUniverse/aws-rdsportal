@@ -87,14 +87,36 @@
           :label="col.label"
           :width="col.width"
       >
-        <template v-if="col.tooltip" #default="{ row }">
+        <!-- 用户输入列：文本 + 复制按钮 -->
+        <template v-if="col.prop === 'user_prompt'" #default="{ row }">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <el-tooltip :content="row.user_prompt || '无'" placement="top">
+        <span class="ellipsis" style="flex: 1;">
+          {{ row.user_prompt || '无' }}
+        </span>
+            </el-tooltip>
+            <el-button
+                type="text"
+                size="small"
+                @click="copyText(row.user_prompt)"
+            >
+              复制
+            </el-button>
+          </div>
+        </template>
+
+        <!-- 其他 tooltip 列 -->
+        <template v-else-if="col.tooltip" #default="{ row }">
           <el-tooltip :content="row[col.prop] || '无'" placement="top">
             <span class="ellipsis">{{ row[col.prop] || '无' }}</span>
           </el-tooltip>
         </template>
+
+        <!-- format 列 -->
         <template v-else-if="col.format" #default="{ row }">
           <span>{{ col.format(row[col.prop] ?? '') }}</span>
         </template>
+
       </el-table-column>
     </el-table>
 
@@ -119,6 +141,7 @@
 import {ref, computed, onMounted} from 'vue'
 import {getProjectsPage} from '../api/project'
 import {ArrowDown} from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 interface Filters {
   user_id: string | null
@@ -162,6 +185,40 @@ const allColumns: Column[] = [
   {label: '创建时间', prop: 'created_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无'},
   {label: '更新时间', prop: 'updated_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无'}
 ]
+
+
+const copyText = async (text: string) => {
+  if (!text) {
+    ElMessage.warning('没有可复制的内容')
+    return
+  }
+
+  // 优先使用 Clipboard API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text)
+      ElMessage.success('已复制到剪贴板')
+      return
+    } catch (e) {
+      // 继续走 fallback
+    }
+  }
+
+  // fallback：兼容 http / 内网 / 老浏览器
+  try {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.left = '-9999px'
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
+    ElMessage.success('已复制到剪贴板')
+  } catch (e) {
+    ElMessage.error('复制失败，请手动复制')
+  }
+}
 
 // 默认全选
 const selectedColumns = ref(allColumns.map(col => col.prop))

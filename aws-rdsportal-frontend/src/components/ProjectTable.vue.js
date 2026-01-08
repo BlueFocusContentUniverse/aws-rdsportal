@@ -1,5 +1,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { getProjectsPage } from '../api/project';
+import { ElMessage } from 'element-plus';
 const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
@@ -27,6 +28,38 @@ const allColumns = [
     { label: '创建时间', prop: 'created_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无' },
     { label: '更新时间', prop: 'updated_at', width: 180, format: (val) => val ? new Date(val).toLocaleString() : '无' }
 ];
+const copyText = async (text) => {
+    if (!text) {
+        ElMessage.warning('没有可复制的内容');
+        return;
+    }
+    // 优先使用 Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+            await navigator.clipboard.writeText(text);
+            ElMessage.success('已复制到剪贴板');
+            return;
+        }
+        catch (e) {
+            // 继续走 fallback
+        }
+    }
+    // fallback：兼容 http / 内网 / 老浏览器
+    try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        ElMessage.success('已复制到剪贴板');
+    }
+    catch (e) {
+        ElMessage.error('复制失败，请手动复制');
+    }
+};
 // 默认全选
 const selectedColumns = ref(allColumns.map(col => col.prop));
 // 根据选中列动态显示
@@ -476,39 +509,100 @@ for (const [col] of __VLS_vFor((__VLS_ctx.displayedColumns))) {
         width: (col.width),
     }, ...__VLS_functionalComponentArgsRest(__VLS_145));
     const { default: __VLS_149 } = __VLS_147.slots;
-    if (col.tooltip) {
+    if (col.prop === 'user_prompt') {
         {
             const { default: __VLS_150 } = __VLS_147.slots;
             const [{ row }] = __VLS_vSlot(__VLS_150);
+            __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+                ...{ style: {} },
+            });
             let __VLS_151;
             /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
             elTooltip;
             // @ts-ignore
             const __VLS_152 = __VLS_asFunctionalComponent1(__VLS_151, new __VLS_151({
-                content: (row[col.prop] || '无'),
+                content: (row.user_prompt || '无'),
                 placement: "top",
             }));
             const __VLS_153 = __VLS_152({
-                content: (row[col.prop] || '无'),
+                content: (row.user_prompt || '无'),
                 placement: "top",
             }, ...__VLS_functionalComponentArgsRest(__VLS_152));
             const { default: __VLS_156 } = __VLS_154.slots;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ellipsis" },
+                ...{ style: {} },
+            });
+            /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
+            (row.user_prompt || '无');
+            // @ts-ignore
+            [projects, vLoading, loading, displayedColumns,];
+            var __VLS_154;
+            let __VLS_157;
+            /** @ts-ignore @type {typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components.elButton | typeof __VLS_components.ElButton} */
+            elButton;
+            // @ts-ignore
+            const __VLS_158 = __VLS_asFunctionalComponent1(__VLS_157, new __VLS_157({
+                ...{ 'onClick': {} },
+                type: "text",
+                size: "small",
+            }));
+            const __VLS_159 = __VLS_158({
+                ...{ 'onClick': {} },
+                type: "text",
+                size: "small",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_158));
+            let __VLS_162;
+            const __VLS_163 = ({ click: {} },
+                { onClick: (...[$event]) => {
+                        if (!(col.prop === 'user_prompt'))
+                            return;
+                        __VLS_ctx.copyText(row.user_prompt);
+                        // @ts-ignore
+                        [copyText,];
+                    } });
+            const { default: __VLS_164 } = __VLS_160.slots;
+            // @ts-ignore
+            [];
+            var __VLS_160;
+            var __VLS_161;
+            // @ts-ignore
+            [];
+        }
+    }
+    else if (col.tooltip) {
+        {
+            const { default: __VLS_165 } = __VLS_147.slots;
+            const [{ row }] = __VLS_vSlot(__VLS_165);
+            let __VLS_166;
+            /** @ts-ignore @type {typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip | typeof __VLS_components.elTooltip | typeof __VLS_components.ElTooltip} */
+            elTooltip;
+            // @ts-ignore
+            const __VLS_167 = __VLS_asFunctionalComponent1(__VLS_166, new __VLS_166({
+                content: (row[col.prop] || '无'),
+                placement: "top",
+            }));
+            const __VLS_168 = __VLS_167({
+                content: (row[col.prop] || '无'),
+                placement: "top",
+            }, ...__VLS_functionalComponentArgsRest(__VLS_167));
+            const { default: __VLS_171 } = __VLS_169.slots;
             __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
                 ...{ class: "ellipsis" },
             });
             /** @type {__VLS_StyleScopedClasses['ellipsis']} */ ;
             (row[col.prop] || '无');
             // @ts-ignore
-            [projects, vLoading, loading, displayedColumns,];
-            var __VLS_154;
+            [];
+            var __VLS_169;
             // @ts-ignore
             [];
         }
     }
     else if (col.format) {
         {
-            const { default: __VLS_157 } = __VLS_147.slots;
-            const [{ row }] = __VLS_vSlot(__VLS_157);
+            const { default: __VLS_172 } = __VLS_147.slots;
+            const [{ row }] = __VLS_vSlot(__VLS_172);
             __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
             (col.format(row[col.prop] ?? ''));
             // @ts-ignore
@@ -525,11 +619,11 @@ for (const [col] of __VLS_vFor((__VLS_ctx.displayedColumns))) {
 [];
 var __VLS_141;
 if (__VLS_ctx.total > 0) {
-    let __VLS_158;
+    let __VLS_173;
     /** @ts-ignore @type {typeof __VLS_components.elPagination | typeof __VLS_components.ElPagination} */
     elPagination;
     // @ts-ignore
-    const __VLS_159 = __VLS_asFunctionalComponent1(__VLS_158, new __VLS_158({
+    const __VLS_174 = __VLS_asFunctionalComponent1(__VLS_173, new __VLS_173({
         ...{ 'onCurrentChange': {} },
         ...{ 'onSizeChange': {} },
         background: true,
@@ -540,7 +634,7 @@ if (__VLS_ctx.total > 0) {
         total: (__VLS_ctx.total),
         ...{ class: "pagination" },
     }));
-    const __VLS_160 = __VLS_159({
+    const __VLS_175 = __VLS_174({
         ...{ 'onCurrentChange': {} },
         ...{ 'onSizeChange': {} },
         background: true,
@@ -550,15 +644,15 @@ if (__VLS_ctx.total > 0) {
         pageSize: (__VLS_ctx.pageSize),
         total: (__VLS_ctx.total),
         ...{ class: "pagination" },
-    }, ...__VLS_functionalComponentArgsRest(__VLS_159));
-    let __VLS_163;
-    const __VLS_164 = ({ currentChange: {} },
+    }, ...__VLS_functionalComponentArgsRest(__VLS_174));
+    let __VLS_178;
+    const __VLS_179 = ({ currentChange: {} },
         { onCurrentChange: (__VLS_ctx.handlePageChange) });
-    const __VLS_165 = ({ sizeChange: {} },
+    const __VLS_180 = ({ sizeChange: {} },
         { onSizeChange: (__VLS_ctx.handleSizeChange) });
     /** @type {__VLS_StyleScopedClasses['pagination']} */ ;
-    var __VLS_161;
-    var __VLS_162;
+    var __VLS_176;
+    var __VLS_177;
 }
 // @ts-ignore
 [total, total, page, pageSize, handlePageChange, handleSizeChange,];

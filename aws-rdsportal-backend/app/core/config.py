@@ -28,6 +28,16 @@ class Settings(BaseSettings):
         default=False, description="是否从 AWS Parameter Store 加载配置"
     )
 
+    # Cognito - 使用默认空值，在 get_settings() 中验证
+    COGNITO_USER_POOL_ID: str = Field(default="", description="Cognito User Pool ID")
+    COGNITO_APP_CLIENT_ID: str = Field(default="", description="Cognito App Client ID")
+    COGNITO_APP_CLIENT_SECRET: str = Field(
+        default="", description="Cognito App Client Secret (可选)"
+    )
+    COGNITO_IDENTITY_POOL_ID: str = Field(
+        default="", description="Cognito Identity Pool ID (用于获取 AWS 临时凭证)"
+    )
+
     # ===== APP =====
     PROJECT_NAME: str = Field(default="AWS RDS Portal Backend", description="项目名称")
     ALLOWED_ORIGINS: List[str] = Field(
@@ -37,6 +47,11 @@ class Settings(BaseSettings):
             "http://localhost:8080",
         ],
         description="CORS 允许的源",
+    )
+
+    # DynamoDB + S3 (用于项目详情读取)
+    DYNAMODB_PROJECTS_TABLE: str = Field(
+        default="KoxProjects-stage74-dev", description="DynamoDB Projects 表名"
     )
 
     # ===== Database =====
@@ -92,9 +107,10 @@ def get_settings() -> Settings:
 
         try:
             params = load_parameters_from_aws_sync(
-                path="/user-backend-dev/",
+                path="/user-backend/",
                 region=_settings.AWS_REGION,
             )
+            print("[PARAMETER STORE] 读取成功 :" + str(params))
             if not params:
                 print("[PARAMETER STORE] 返回为空，没有读取到任何参数")
             else:
@@ -104,6 +120,22 @@ def get_settings() -> Settings:
                     print("[CONFIG] DATABASE_URL 已从 Parameter Store 设置")
                 else:
                     print("[PARAMETER STORE] Parameter Store 中未找到有效的 database_url")
+            if "dynamodb_projects_table" in params:
+                _settings.DYNAMODB_PROJECTS_TABLE = params["dynamodb_projects_table"]
+
+            cognito_params = load_parameters_from_aws_sync(
+                path="/user-backend-dev/cognito/",
+                region=_settings.AWS_REGION,
+            )
+            print("cognito_params : " + str(cognito_params))
+            if "user_pool_id" in cognito_params:
+                _settings.COGNITO_USER_POOL_ID = cognito_params["user_pool_id"]
+            if "app_client_id" in cognito_params:
+                _settings.COGNITO_APP_CLIENT_ID = cognito_params["app_client_id"]
+            if "app_client_secret" in cognito_params:
+                _settings.COGNITO_APP_CLIENT_SECRET = cognito_params["app_client_secret"]
+            if "identity_pool_id" in cognito_params:
+                _settings.COGNITO_IDENTITY_POOL_ID = cognito_params["identity_pool_id"]
 
         except Exception as e:
             # ✅ 直接打印 AWS 调用失败信息，不抛 RuntimeError
@@ -131,7 +163,6 @@ def get_settings() -> Settings:
             "DB_HOST=", bool(_settings.DB_HOST),
             "DB_PASSWORD=", bool(_settings.DB_PASSWORD),
         )
-
     # ===== 最终兜底 / 校验 =====
     if not _settings.DATABASE_URL:
         print("[CONFIG WARNING] DATABASE_URL 仍为空，准备进入 fallback 逻辑")
@@ -157,6 +188,7 @@ def get_settings() -> Settings:
 
         load_dotenv(env_file, override=True)
 
+        # ========== 1. 数据库参数兜底 ==========
         # 只补字段，不重建 Settings
         _settings.DB_HOST = _settings.DB_HOST or os.getenv("DB_HOST", "")
         _settings.DB_PORT = _settings.DB_PORT or os.getenv("DB_PORT", "5432")
@@ -185,5 +217,36 @@ def get_settings() -> Settings:
 
         print("[CONFIG] DATABASE_URL 已由本地 .env fallback 构建")
 
+        # ========== 2. Cognito 参数兜底 ==========
+        # 从同一个环境文件读取 Cognito 参数
+        cognito_params = {
+            "user_pool_id": os.getenv("COGNITO_USER_POOL_ID"),
+            "app_client_id": os.getenv("COGNITO_APP_CLIENT_ID"),
+            "app_client_secret": os.getenv("COGNITO_APP_CLIENT_SECRET"),
+            "identity_pool_id": os.getenv("COGNITO_IDENTITY_POOL_ID"),
+        }
+
+        # 赋值到 settings 中
+        if "user_pool_id" in cognito_params and cognito_params["user_pool_id"]:
+            _settings.COGNITO_USER_POOL_ID = cognito_params["user_pool_id"]
+            print(f"[CONFIG] Fallback COGNITO_USER_POOL_ID: {_settings.COGNITO_USER_POOL_ID}")
+        if "app_client_id" in cognito_params and cognito_params["app_client_id"]:
+            _settings.COGNITO_APP_CLIENT_ID = cognito_params["app_client_id"]
+            print(f"[CONFIG] Fallback COGNITO_APP_CLIENT_ID: {_settings.COGNITO_APP_CLIENT_ID}")
+        if "app_client_secret" in cognito_params and cognito_params["app_client_secret"]:
+            _settings.COGNITO_APP_CLIENT_SECRET = cognito_params["app_client_secret"]
+            print(f"[CONFIG] Fallback COGNITO_APP_CLIENT_SECRET: ******")  # 隐藏敏感信息
+        if "identity_pool_id" in cognito_params and cognito_params["identity_pool_id"]:
+            _settings.COGNITO_IDENTITY_POOL_ID = cognito_params["identity_pool_id"]
+            print(f"[CONFIG] Fallback COGNITO_IDENTITY_POOL_ID: {_settings.COGNITO_IDENTITY_POOL_ID}")
+
+        # 可选：校验关键 Cognito 参数（如果你的业务必须要有）
+        required_cognito_params = ["user_pool_id", "app_client_id"]
+        missing_cognito_params = [p for p in required_cognito_params if not cognito_params.get(p)]
+        if missing_cognito_params:
+            print(f"[CONFIG WARNING] 本地 .env 缺少 Cognito 参数: {missing_cognito_params}")
+            # 如果是必须的参数，可取消下面注释抛出异常
+            # raise RuntimeError(f"[CONFIG ERROR] 本地 .env 缺少 Cognito 参数: {missing_cognito_params}")
     print("[CONFIG] 最终 DATABASE_URL =", _settings.DATABASE_URL)
+    print("_setting :", _settings)
     return _settings

@@ -17,6 +17,7 @@ from typing import Dict, Optional
 
 import boto3
 import structlog
+from app.core.config import get_settings
 from app.core.monitoring import track_aws_latency
 from botocore.config import Config
 from botocore.exceptions import ClientError, EndpointConnectionError, ConnectTimeoutError
@@ -596,3 +597,10 @@ class CognitoClient:
             elif error_code == "ExpiredCodeException":
                 raise CognitoException("Verification code expired")
             raise CognitoException(f"Reset password failed: {e.response['Error']['Message']}")
+settings = get_settings()
+cognito_client = CognitoClient(
+    region=settings.AWS_REGION,
+    user_pool_id=settings.COGNITO_USER_POOL_ID,
+    client_id=settings.COGNITO_APP_CLIENT_ID,
+    client_secret=settings.COGNITO_APP_CLIENT_SECRET or None,
+)

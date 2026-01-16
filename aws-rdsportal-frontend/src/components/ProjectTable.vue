@@ -138,7 +138,7 @@
 
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {getProjectsPage} from '../api/project'
 import {ArrowDown} from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
@@ -221,13 +221,47 @@ const copyText = async (text: string) => {
 }
 
 // 默认全选
-const selectedColumns = ref(allColumns.map(col => col.prop))
+const COLUMN_STORAGE_KEY = 'project_table_selected_columns'
 
+const selectedColumns = ref<string[]>([])
+
+// 初始化列选择
+const initSelectedColumns = () => {
+  try {
+    const cache = localStorage.getItem(COLUMN_STORAGE_KEY)
+    if (cache) {
+      const parsed = JSON.parse(cache)
+      if (Array.isArray(parsed)) {
+        // 只保留仍然存在的列（防止代码更新）
+        const validProps = allColumns.map(col => col.prop)
+        selectedColumns.value = parsed.filter(p => validProps.includes(p))
+
+        // 如果被删光了，兜底全选
+        if (selectedColumns.value.length === 0) {
+          selectedColumns.value = validProps
+        }
+        return
+      }
+    }
+  } catch (e) {
+    console.warn('读取列配置失败，使用默认配置', e)
+  }
+
+  // 默认全选
+  selectedColumns.value = allColumns.map(col => col.prop)
+}
 // 根据选中列动态显示
 const displayedColumns = computed(() =>
     allColumns.filter(col => selectedColumns.value.includes(col.prop))
 )
 
+watch(
+    selectedColumns,
+    (val) => {
+      localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(val))
+    },
+    { deep: true }
+)
 // 列选择控制
 const selectAllColumns = () => selectedColumns.value = allColumns.map(col => col.prop)
 const deselectAllColumns = () => selectedColumns.value = []
@@ -265,8 +299,10 @@ const fetchProjects = async () => {
 }
 
 onMounted(() => {
+  initSelectedColumns()
   fetchProjects()
 })
+
 </script>
 
 <style scoped>

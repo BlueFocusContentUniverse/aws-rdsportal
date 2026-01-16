@@ -2,9 +2,6 @@
 AWS Parameter Store 参数加载器
 """
 
-from typing import Dict
-
-import boto3
 import structlog
 
 logger = structlog.get_logger(__name__)
@@ -12,12 +9,10 @@ logger = structlog.get_logger(__name__)
 
 from typing import Dict
 import boto3
-import logging
-
 
 
 def load_parameters_from_aws_sync(
-        path: str = "/user-backend-dev/",
+        path: str = "/user-backend/",
         region: str = "us-west-2",
 ) -> Dict[str, str]:
     print(f"[SSM] param path : {path}")
@@ -27,21 +22,23 @@ def load_parameters_from_aws_sync(
     parameters: Dict[str, str] = {}
 
     try:
-        # 👉 先尝试当「目录」读
-        response = ssm.get_parameters_by_path(
-            Path=path,
-            Recursive=True,
-            WithDecryption=True,
-        )
+        next_token = None
 
-        # 如果目录下有参数
-        if response.get("Parameters"):
-            print(f"[SSM] detected path parameters ({len(response['Parameters'])})")
+        while True:
+            kwargs = {
+                "Path": path,
+                "Recursive": True,
+                "WithDecryption": True,
+            }
+            if next_token:
+                kwargs["NextToken"] = next_token
 
-            for param in response["Parameters"]:
+            response = ssm.get_parameters_by_path(**kwargs)
+
+            for param in response.get("Parameters", []):
                 name = (
                     param["Name"]
-                    .replace(path, "")
+                    .replace(path.rstrip("/"), "")
                     .lstrip("/")
                     .replace("/", "_")
                 )
@@ -49,32 +46,15 @@ def load_parameters_from_aws_sync(
                 parameters[name] = value
                 print(f"[SSM] {name} = {value}")
 
-            logger.info(
-                "aws_params_loaded_by_path",
-                path=path,
-                region=region,
-                param_count=len(parameters),
-            )
-            return parameters
-
-        # 👉 如果目录下是空的，说明它可能是「单个参数」
-        print("[SSM] no parameters under path, trying get_parameter")
-
-        single = ssm.get_parameter(
-            Name=path,
-            WithDecryption=True,
-        )
-
-        key = path.split("/")[-1]
-        value = single["Parameter"]["Value"]
-        parameters[key] = value
-
-        print(f"[SSM] {key} = {value}")
+            next_token = response.get("NextToken")
+            if not next_token:
+                break
 
         logger.info(
-            "aws_param_loaded_single",
-            name=path,
+            "aws_params_loaded_by_path",
+            path=path,
             region=region,
+            param_count=len(parameters),
         )
         return parameters
 
@@ -87,6 +67,7 @@ def load_parameters_from_aws_sync(
         )
         print("[SSM] ERROR:", e)
         return {}
+
 
 
 async def load_parameters_from_aws(

@@ -10,11 +10,15 @@ AWS 客户端（DynamoDB + S3 + SQS）
 
 from functools import lru_cache
 from typing import Optional, Dict, Any
+import asyncio
+
 
 import boto3
 from botocore.config import Config
-from botocore.exceptions import EndpointConnectionError, ConnectTimeoutError
+from botocore.exceptions import EndpointConnectionError, ConnectTimeoutError, ClientError
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from app.core.monitoring import track_aws_latency
+
 
 from app.core.logging import get_logger
 
@@ -89,6 +93,20 @@ class AWSClients:
         self.dynamodb = _get_dynamodb_resource(region)
         self.s3 = _get_s3_client(region)
         self.sqs = _get_sqs_client(region)
+    @aws_retry
+    @track_aws_latency("dynamodb", "get_item")
+    async def dynamodb_get_item(
+            self, table_name: str, pk: str, sk: str
+    ) -> Optional[Dict[str, Any]]:
+        """从 DynamoDB 获取单个 item"""
+        try:
+            table = _get_table(self.dynamodb, table_name)
+            # 使用 to_thread 避免阻塞 event loop
+            response = await asyncio.to_thread(table.get_item, Key={"PK": pk, "SK": sk})
+            return response.get("Item")
+        except ClientError as e:
+            logger.error("dynamodb_get_item_failed", table=table_name, pk=pk, sk=sk, error=str(e))
+            return None
 
 
 # 全局实例

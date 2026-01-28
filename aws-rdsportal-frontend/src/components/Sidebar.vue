@@ -22,15 +22,14 @@
         <span class="sub-menu-title">数据查询</span>
       </template>
       <!-- 子菜单项 -->
-      <el-menu-item index="/projects/list" class="menu-item">
-        <span class="item-text">项目列表</span>
+      <el-menu-item index="/projects" class="menu-item">
+        <span class="item-text">项目列表(生产数据库)</span>
         <div class="item-active-mark"></div>
       </el-menu-item>
-      <!-- 未来可以在这里添加更多子项，例如： -->
-      <!-- <el-menu-item index="/projects/statistics" class="menu-item">
-        <span class="item-text">项目统计</span>
+      <el-menu-item index="/projectsDEV" class="menu-item">
+        <span class="item-text">项目列表(开发数据库)</span>
         <div class="item-active-mark"></div>
-      </el-menu-item> -->
+      </el-menu-item>
     </el-sub-menu>
 
     <!-- 示例：系统管理 (另一个父菜单) -->

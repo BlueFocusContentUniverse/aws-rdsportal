@@ -1,6 +1,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { getProjectsPage } from '../api/project';
 import { ElMessage } from 'element-plus';
+const props = defineProps();
 const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
@@ -114,7 +115,7 @@ const handleSizeChange = (newSize) => {
 const fetchProjects = async () => {
     loading.value = true;
     try {
-        const res = await getProjectsPage(page.value, pageSize.value, filters.value);
+        const res = await getProjectsPage(page.value, pageSize.value, filters.value, props.environment);
         projects.value = res.data.items;
         total.value = res.data.total;
     }
@@ -130,6 +131,8 @@ onMounted(() => {
     fetchProjects();
 });
 const __VLS_ctx = {
+    ...{},
+    ...{},
     ...{},
     ...{},
 };
@@ -685,5 +688,7 @@ if (__VLS_ctx.total > 0) {
 }
 // @ts-ignore
 [total, total, page, pageSize, handlePageChange, handleSizeChange,];
-const __VLS_export = (await import('vue')).defineComponent({});
+const __VLS_export = (await import('vue')).defineComponent({
+    __typeProps: {},
+});
 export default {};

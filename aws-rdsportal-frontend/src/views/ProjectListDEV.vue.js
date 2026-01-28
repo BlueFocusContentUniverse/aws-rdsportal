@@ -14,10 +14,10 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
 const __VLS_0 = ProjectTable;
 // @ts-ignore
 const __VLS_1 = __VLS_asFunctionalComponent1(__VLS_0, new __VLS_0({
-    environment: "main",
+    environment: "dev",
 }));
 const __VLS_2 = __VLS_1({
-    environment: "main",
+    environment: "dev",
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
 const __VLS_export = (await import('vue')).defineComponent({});
 export default {};

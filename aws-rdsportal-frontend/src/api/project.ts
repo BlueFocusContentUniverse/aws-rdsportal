@@ -9,7 +9,8 @@ interface ProjectFilters {
 export const getProjectsPage = async (
     page: number,
     pageSize: number,
-    filters: ProjectFilters
+    filters: ProjectFilters,
+    environment: string
 ) => {
     const params: any = { page, page_size: pageSize }
 
@@ -19,6 +20,7 @@ export const getProjectsPage = async (
         params.start_time = filters.date_range[0]
         params.end_time = filters.date_range[1]
     }
+    params.environment = environment
 
     return request.get('/projects/list', { params })
 }

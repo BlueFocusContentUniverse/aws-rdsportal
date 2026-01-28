@@ -3,6 +3,7 @@ import Layout from '../views/Layout.vue'           // 主布局
 import ProjectList from '../views/ProjectList.vue'
 import Login from '../views/Login.vue'
 import { getToken } from '../utils/auth'
+import ProjectListDEV from "../views/ProjectListDEV.vue";
 
 const routes: RouteRecordRaw[] = [
     {
@@ -19,6 +20,11 @@ const routes: RouteRecordRaw[] = [
                 path: 'projects',
                 name: 'ProjectList',
                 component: ProjectList,
+            },
+            {
+                path: 'projectsDEV',
+                name: 'ProjectListDEV',
+                component: ProjectListDEV,
             },
             {
                 path: '',

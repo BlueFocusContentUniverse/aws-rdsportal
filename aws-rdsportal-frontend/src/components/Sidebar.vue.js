@@ -102,11 +102,11 @@ let __VLS_14;
 elMenuItem;
 // @ts-ignore
 const __VLS_15 = __VLS_asFunctionalComponent1(__VLS_14, new __VLS_14({
-    index: "/projects/list",
+    index: "/projects",
     ...{ class: "menu-item" },
 }));
 const __VLS_16 = __VLS_15({
-    index: "/projects/list",
+    index: "/projects",
     ...{ class: "menu-item" },
 }, ...__VLS_functionalComponentArgsRest(__VLS_15));
 /** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
@@ -122,46 +122,20 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
 // @ts-ignore
 [];
 var __VLS_17;
-// @ts-ignore
-[];
-var __VLS_10;
 let __VLS_20;
-/** @ts-ignore @type {typeof __VLS_components.elSubMenu | typeof __VLS_components.ElSubMenu | typeof __VLS_components.elSubMenu | typeof __VLS_components.ElSubMenu} */
-elSubMenu;
-// @ts-ignore
-const __VLS_21 = __VLS_asFunctionalComponent1(__VLS_20, new __VLS_20({
-    index: "2",
-    ...{ class: "sub-menu-wrapper" },
-}));
-const __VLS_22 = __VLS_21({
-    index: "2",
-    ...{ class: "sub-menu-wrapper" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_21));
-/** @type {__VLS_StyleScopedClasses['sub-menu-wrapper']} */ ;
-const { default: __VLS_25 } = __VLS_23.slots;
-{
-    const { title: __VLS_26 } = __VLS_23.slots;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-        ...{ class: "sub-menu-title" },
-    });
-    /** @type {__VLS_StyleScopedClasses['sub-menu-title']} */ ;
-    // @ts-ignore
-    [];
-}
-let __VLS_27;
 /** @ts-ignore @type {typeof __VLS_components.elMenuItem | typeof __VLS_components.ElMenuItem | typeof __VLS_components.elMenuItem | typeof __VLS_components.ElMenuItem} */
 elMenuItem;
 // @ts-ignore
-const __VLS_28 = __VLS_asFunctionalComponent1(__VLS_27, new __VLS_27({
-    index: "/system/users",
+const __VLS_21 = __VLS_asFunctionalComponent1(__VLS_20, new __VLS_20({
+    index: "/projectsDEV",
     ...{ class: "menu-item" },
 }));
-const __VLS_29 = __VLS_28({
-    index: "/system/users",
+const __VLS_22 = __VLS_21({
+    index: "/projectsDEV",
     ...{ class: "menu-item" },
-}, ...__VLS_functionalComponentArgsRest(__VLS_28));
+}, ...__VLS_functionalComponentArgsRest(__VLS_21));
 /** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
-const { default: __VLS_32 } = __VLS_30.slots;
+const { default: __VLS_25 } = __VLS_23.slots;
 __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
     ...{ class: "item-text" },
 });
@@ -172,10 +146,61 @@ __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
 /** @type {__VLS_StyleScopedClasses['item-active-mark']} */ ;
 // @ts-ignore
 [];
-var __VLS_30;
+var __VLS_23;
 // @ts-ignore
 [];
-var __VLS_23;
+var __VLS_10;
+let __VLS_26;
+/** @ts-ignore @type {typeof __VLS_components.elSubMenu | typeof __VLS_components.ElSubMenu | typeof __VLS_components.elSubMenu | typeof __VLS_components.ElSubMenu} */
+elSubMenu;
+// @ts-ignore
+const __VLS_27 = __VLS_asFunctionalComponent1(__VLS_26, new __VLS_26({
+    index: "2",
+    ...{ class: "sub-menu-wrapper" },
+}));
+const __VLS_28 = __VLS_27({
+    index: "2",
+    ...{ class: "sub-menu-wrapper" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_27));
+/** @type {__VLS_StyleScopedClasses['sub-menu-wrapper']} */ ;
+const { default: __VLS_31 } = __VLS_29.slots;
+{
+    const { title: __VLS_32 } = __VLS_29.slots;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "sub-menu-title" },
+    });
+    /** @type {__VLS_StyleScopedClasses['sub-menu-title']} */ ;
+    // @ts-ignore
+    [];
+}
+let __VLS_33;
+/** @ts-ignore @type {typeof __VLS_components.elMenuItem | typeof __VLS_components.ElMenuItem | typeof __VLS_components.elMenuItem | typeof __VLS_components.ElMenuItem} */
+elMenuItem;
+// @ts-ignore
+const __VLS_34 = __VLS_asFunctionalComponent1(__VLS_33, new __VLS_33({
+    index: "/system/users",
+    ...{ class: "menu-item" },
+}));
+const __VLS_35 = __VLS_34({
+    index: "/system/users",
+    ...{ class: "menu-item" },
+}, ...__VLS_functionalComponentArgsRest(__VLS_34));
+/** @type {__VLS_StyleScopedClasses['menu-item']} */ ;
+const { default: __VLS_38 } = __VLS_36.slots;
+__VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+    ...{ class: "item-text" },
+});
+/** @type {__VLS_StyleScopedClasses['item-text']} */ ;
+__VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+    ...{ class: "item-active-mark" },
+});
+/** @type {__VLS_StyleScopedClasses['item-active-mark']} */ ;
+// @ts-ignore
+[];
+var __VLS_36;
+// @ts-ignore
+[];
+var __VLS_29;
 // @ts-ignore
 [];
 var __VLS_3;

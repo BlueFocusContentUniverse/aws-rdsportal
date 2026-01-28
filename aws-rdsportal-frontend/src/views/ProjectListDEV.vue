@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <div class="content">
-      <ProjectTable environment="main"/>
+      <ProjectTable environment="dev" />
     </div>
   </div>
 </template>

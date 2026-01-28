@@ -143,6 +143,11 @@ import {getProjectsPage} from '../api/project'
 import {ArrowDown} from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
+// 定义 props，只接收一个字符串
+const props = defineProps<{
+  environment: string
+}>()
+
 interface Filters {
   user_id: string | null
   project_id: string | null
@@ -288,7 +293,7 @@ const handleSizeChange = (newSize: number) => {
 const fetchProjects = async () => {
   loading.value = true
   try {
-    const res = await getProjectsPage(page.value, pageSize.value, filters.value)
+    const res = await getProjectsPage(page.value, pageSize.value, filters.value,props.environment)
     projects.value = res.data.items
     total.value = res.data.total
   } catch (err) {

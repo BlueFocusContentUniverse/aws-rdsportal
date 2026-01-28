@@ -7,7 +7,7 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.database import get_db
+from app.core.database import get_main_db,get_dev_db
 from app.models.project import Project
 from app.schemas.project import ProjectListResponse, ProjectResponse
 
@@ -78,12 +78,18 @@ async def list_projects(
         project_id: int = Query(None, description="项目ID，精准查询某个项目"),
         start_time: datetime = Query(None, description="开始时间（UTC），格式：2025-01-01T00:00:00"),
         end_time: datetime = Query(None, description="结束时间（UTC），格式：2025-12-31T23:59:59"),
+        environment: str = Query(None, description="环境，过滤指定环境"),
         # 数据库依赖
-        db: Session = Depends(get_db),
+        main_db: Session = Depends(get_main_db),
+        dev_db: Session = Depends(get_dev_db),
 ):
     offset = (page - 1) * page_size
 
     # 构建查询条件
+    if environment == "dev":
+        db = dev_db
+    else:
+        db = main_db
     query = db.query(Project)
 
     # 1. 按项目ID过滤（精准匹配）

@@ -1,5 +1,5 @@
 import request from "../utils/request";
-export const getProjectsPage = async (page, pageSize, filters) => {
+export const getProjectsPage = async (page, pageSize, filters, environment) => {
     const params = { page, page_size: pageSize };
     if (filters.user_id)
         params.user_id = filters.user_id;
@@ -9,5 +9,6 @@ export const getProjectsPage = async (page, pageSize, filters) => {
         params.start_time = filters.date_range[0];
         params.end_time = filters.date_range[1];
     }
+    params.environment = environment;
     return request.get('/projects/list', { params });
 };
